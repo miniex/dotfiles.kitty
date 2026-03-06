@@ -23,8 +23,8 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 
 | Key              | Description        |
 |------------------|--------------------|
-| `Ctrl+Shift+J`   | Move tab forward   |
-| `Ctrl+Shift+K`   | Move tab backward  |
+| `Ctrl+Shift+K`   | Move tab forward   |
+| `Ctrl+Shift+J`   | Move tab backward  |
 
 ## Installation
 
