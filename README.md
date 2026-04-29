@@ -5,7 +5,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 ## Features
 
 - **D2Coding Ligature** - Korean-friendly monospace font with ligature support
-- **Nerd Font Icons** - Full symbol mapping via Symbols Nerd Font Mono
+- **Nerd Font Icons** - Catch-all PUA fallback to Symbols Nerd Font Mono — every Nerd Font glyph renders (Pomicons, Powerline, FA, FA-Extension, Weather, Devicons, Seti, Codicons, Font Logos, Octicons, Material Design Icons, Custom — including the supplementary plane MDI block at U+F0001+)
 - **Semi-transparent** - 85% background opacity with dark theme
 - **Clipboard Integration** - Full read/write clipboard support
 
