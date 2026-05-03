@@ -18,6 +18,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 | Cursor               | Block                            |
 | Background           | `#1e1e1e` (85% opacity)          |
 | Foreground           | `#ffffff`                        |
+| Window Border        | `#E890B0`                        |
 | Window Padding       | 2px                              |
 
 OS-specific settings (font size, window decorations, etc.) live in
