@@ -14,7 +14,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 | Setting              | Value                            |
 |----------------------|----------------------------------|
 | Font                 | D2Coding Ligature                |
-| Font Size            | from OS profile (see below)      |
+| Font Size            | from [OS profile](#os-profiles)  |
 | Cursor               | Block                            |
 | Background           | `#1e1e1e` (85% opacity)          |
 | Foreground           | `#ffffff`                        |
@@ -67,6 +67,15 @@ The installer clones the repo to `~/.config/kitty`, auto-detects your OS
    - [D2Coding Ligature](https://github.com/naver/d2codingfont)
    - [Symbols Nerd Font Mono](https://www.nerdfonts.com/)
 
+## Contributing
+
+PRs welcome. Before opening one:
+
+- Run `./tools/format.sh` and `./tools/lint.sh` — both must pass clean.
+- Follow the commit prefix convention (`feat:`, `fix:`, `refactor:`, `docs:`, …, all lowercase).
+
+Full details in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
-Free to use and modify.
+[MIT](LICENSE) © 2026 Han Damin — applies to all code in this repository.
