@@ -4,7 +4,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 
 ## Features
 
-- **D2Coding Ligature** - Korean-friendly monospace font with ligature support
+- **D2Coding** - Korean-friendly monospace font
 - **Nerd Font Icons** - Catch-all PUA fallback to Symbols Nerd Font Mono — every Nerd Font glyph renders (Pomicons, Powerline, FA, FA-Extension, Weather, Devicons, Seti, Codicons, Font Logos, Octicons, Material Design Icons, Custom — including the supplementary plane MDI block at U+F0001+)
 - **Semi-transparent** - 85% background opacity with dark theme
 - **Clipboard Integration** - Full read/write clipboard support
@@ -13,7 +13,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 
 | Setting              | Value                            |
 |----------------------|----------------------------------|
-| Font                 | D2Coding Ligature                |
+| Font                 | D2Coding                         |
 | Font Size            | from [OS profile](#os-profiles)  |
 | Cursor               | Block                            |
 | Background           | `#1e1e1e` (85% opacity)          |
@@ -64,7 +64,7 @@ The installer clones the repo to `~/.config/kitty`, auto-detects your OS
    sh ~/.config/kitty/install.sh
    ```
 4. Install the required fonts:
-   - [D2Coding Ligature](https://github.com/naver/d2codingfont)
+   - [D2Coding](https://github.com/naver/d2codingfont)
    - [Symbols Nerd Font Mono](https://www.nerdfonts.com/)
 
 ## Contributing
