@@ -8,6 +8,7 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 - **Nerd Font Icons** - Catch-all PUA fallback to Symbols Nerd Font Mono — every Nerd Font glyph renders (Pomicons, Powerline, FA, FA-Extension, Weather, Devicons, Seti, Codicons, Font Logos, Octicons, Material Design Icons, Custom — including the supplementary plane MDI block at U+F0001+)
 - **Semi-transparent** - 85% background opacity with dark theme
 - **Clipboard Integration** - Full read/write clipboard support
+- **Gradient Tab Bar** - Custom Python tab renderer (`tab_bar.py`) interpolates each tab's color across `#98ABCC` → `#E890B0`; inactive tabs are dimmed toward the background
 
 ## Configuration
 
@@ -20,6 +21,9 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 | Foreground           | `#ffffff`                        |
 | Window Border        | `#E890B0`                        |
 | Window Padding       | 2px                              |
+| Tab Bar Style        | `custom` (see `tab_bar.py`)      |
+| Tab Bar Gradient     | `#98ABCC` → `#E890B0`            |
+| Tab Bar Edge         | bottom                           |
 
 OS-specific settings (font size, window decorations, etc.) live in
 `os/linux.conf` and `os/macos.conf`. The active profile is selected by
