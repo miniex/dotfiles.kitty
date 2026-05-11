@@ -1,5 +1,6 @@
 import colorsys
 import time
+from dataclasses import dataclass
 from functools import lru_cache
 
 from kitty.boss import get_boss
@@ -9,42 +10,68 @@ from kitty.tab_bar import (
     ExtraData,
     TabBarData,
     as_rgb,
-    draw_title,
 )
+
+try:
+    from kitty.fast_data_types import wcswidth as _wcswidth  # type: ignore
+except ImportError:
+    import unicodedata
+
+    def _wcswidth(s: str) -> int:
+        return sum(2 if unicodedata.east_asian_width(c) in ("W", "F") else 1 for c in s)
+
+
+def _cw(s: str) -> int:
+    # wcswidth returns ≤0 for non-printable / unknown; assume 1 cell each.
+    w = _wcswidth(s)
+    return w if w > 0 else len(s)
+
 
 START = (0x98, 0xAB, 0xCC)  # #98ABCC
 END = (0xE8, 0x90, 0xB0)  # #E890B0
 BAR_BG = 0x1E1E1E
 WHITE = 0xFFFFFF
-# Inactive tab title is rendered as a hue-preserving, lower-saturation,
-# dimmer version of the pill color. Numbers are tuned so the transition
-# to/from white isn't a harsh jump — softer span keeps the fade gentle.
+ATTENTION = 0xF5C76A  # warm amber
 INACTIVE_TEXT_SAT = 0.3
 INACTIVE_TEXT_LUM = 0.55
 
-# Glyphs via escape sequences — PUA literals can be mangled by tooling.
+# Literal U+E0B6/E0B4 (Powerline-Extra caps) — many editors silently strip these.
 LEFT_CAP = ""
 RIGHT_CAP = ""
-FLOWER = "✿"  # ✿ left-side decoration on every tab
-HEART = "❥"  # ❥ kawaii right-side decoration on every tab
+FLOWER = "✿"
+BELL = "‼"
+HEART = "❥"
 
-# Active-switch fade animation. Kitty's tab bar is cell-based, so we can't
-# slide pixels — but we can repaint at ~60 fps for ANIM_DURATION seconds
-# and interpolate the title fg between muted and white during that window.
-# Longer duration + smoothstep easing makes the change land softly.
+LAYOUT_GLYPHS = {
+    "tall": "▌",
+    "fat": "▐",
+    "grid": "▦",
+    "horizontal": "═",
+    "vertical": "║",
+    "splits": "◫",
+    "stack": "▣",
+}
+LAYOUT_DEFAULT = "◇"
+
+SUPER_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+SUPER_PLUS = "⁺"
+
 ANIM_DURATION = 0.30
 ANIM_TICK = 0.016
 
-# Per-tab decoration cells (spaces + flower + heart + right cap); first tab adds a left cap.
-DECO_CELLS = 7
-FIRST_TAB_EXTRA = 1
+# 500-bucket quantization — perceptually continuous, lets us memoize per-cell colors.
+_GRAD_STEPS = 500
 
-_anim = {
-    "start": 0.0,
-    "active_id": None,
-    "prev_active_id": None,
-    "timer_id": None,
-}
+
+@dataclass
+class AnimState:
+    start: float = 0.0
+    active_id: int | None = None
+    prev_active_id: int | None = None
+    timer_id: int | None = None
+
+
+_anim = AnimState()
 
 
 def _now() -> float:
@@ -52,12 +79,12 @@ def _now() -> float:
 
 
 def _ease(t: float) -> float:
-    # smoothstep — symmetric S-curve, slow at both ends, no harsh edges.
+    # smoothstep
     return t * t * (3.0 - 2.0 * t)
 
 
 def _progress() -> float:
-    elapsed = _now() - _anim["start"]
+    elapsed = _now() - _anim.start
     if elapsed <= 0.0:
         return 0.0
     if elapsed >= ANIM_DURATION:
@@ -66,36 +93,53 @@ def _progress() -> float:
 
 
 def _tick(timer_id: int) -> None:
-    if _now() - _anim["start"] >= ANIM_DURATION:
+    if _now() - _anim.start >= ANIM_DURATION:
         remove_timer(timer_id)
-        _anim["timer_id"] = None
-        _anim["prev_active_id"] = None
+        _anim.timer_id = None
+        _anim.prev_active_id = None
         return
     tm = get_boss().active_tab_manager
     if tm is not None:
         tm.mark_tab_bar_dirty()
 
 
+def _live_tab_ids() -> set:
+    tm = get_boss().active_tab_manager
+    if tm is None:
+        return set()
+    return {getattr(t, "id", None) for t in tm.tabs}
+
+
 def _start_anim(new_active_id: int) -> None:
-    if _anim["active_id"] == new_active_id:
+    if _anim.active_id == new_active_id:
         return
-    _anim["prev_active_id"] = _anim["active_id"]
-    _anim["active_id"] = new_active_id
-    _anim["start"] = _now()
-    if _anim["timer_id"] is None:
-        _anim["timer_id"] = add_timer(_tick, ANIM_TICK, True)
+    # Closed tabs won't render, so a fade-out targeting one is dead state.
+    live = _live_tab_ids()
+    prev = _anim.active_id if _anim.active_id in live else None
+    _anim.prev_active_id = prev
+    _anim.active_id = new_active_id
+    _anim.start = _now()
+    if _anim.timer_id is None:
+        _anim.timer_id = add_timer(_tick, ANIM_TICK, True)
 
 
 def _lerp(a: int, b: int, t: float) -> int:
     return round(a + (b - a) * t)
 
 
-def _gradient(t: float) -> int:
+@lru_cache(maxsize=_GRAD_STEPS + 1)
+def _gradient_bucket(bucket: int) -> int:
+    t = bucket / _GRAD_STEPS
     return (
         (_lerp(START[0], END[0], t) << 16)
         | (_lerp(START[1], END[1], t) << 8)
         | _lerp(START[2], END[2], t)
     )
+
+
+def _grad(t: float) -> int:
+    t = max(0.0, min(1.0, t))
+    return _gradient_bucket(round(t * _GRAD_STEPS))
 
 
 def _lerp_color(a: int, b: int, t: float) -> int:
@@ -106,7 +150,7 @@ def _lerp_color(a: int, b: int, t: float) -> int:
     )
 
 
-@lru_cache(maxsize=64)
+@lru_cache(maxsize=512)
 def _muted(rgb: int) -> int:
     r = ((rgb >> 16) & 0xFF) / 255
     g = ((rgb >> 8) & 0xFF) / 255
@@ -116,10 +160,53 @@ def _muted(rgb: int) -> int:
     return (round(r * 255) << 16) | (round(g * 255) << 8) | round(b * 255)
 
 
-@lru_cache(maxsize=64)
-def _bg_for(idx: int, total: int) -> int:
-    t = 0.0 if total <= 1 else (idx - 1) / (total - 1)
-    return _gradient(t)
+def _layout_glyph(tab: TabBarData) -> str:
+    return LAYOUT_GLYPHS.get(tab.layout_name, LAYOUT_DEFAULT)
+
+
+def _left_glyph(tab: TabBarData) -> str:
+    return BELL if tab.needs_attention else FLOWER
+
+
+def _right_glyph(tab: TabBarData) -> str:
+    n = tab.num_window_groups
+    if n <= 1:
+        return HEART
+    if 2 <= n <= 9:
+        return SUPER_DIGITS[n]
+    return SUPER_PLUS
+
+
+def _format_title(draw_data: DrawData, tab: TabBarData, index: int) -> str:
+    # Falls back to a hardcoded template if format() raises on unsupported fields.
+    template = getattr(draw_data, "active_title_template", None) if tab.is_active else None
+    template = template or getattr(draw_data, "title_template", None) or "{index}: {title}"
+    try:
+        return template.format(
+            index=index,
+            title=tab.title,
+            layout_name=tab.layout_name,
+            num_windows=tab.num_windows,
+            num_window_groups=tab.num_window_groups,
+        )
+    except (KeyError, ValueError, AttributeError):
+        return f"{index}: {tab.title}"
+
+
+def _truncate(s: str, max_cells: int) -> str:
+    if max_cells <= 0:
+        return ""
+    if _cw(s) <= max_cells:
+        return s
+    out = ""
+    used = 0
+    for ch in s:
+        w = _cw(ch)
+        if used + w + 1 > max_cells:  # leave room for ellipsis
+            break
+        out += ch
+        used += w
+    return out + "…"
 
 
 def draw_tab(
@@ -138,84 +225,113 @@ def draw_tab(
     if tab.is_active:
         _start_anim(tab.tab_id)
 
-    bg = _bg_for(index, total)
-    muted = _muted(bg)
-    progress = _progress()
-    fading_out = tab.tab_id == _anim["prev_active_id"] and progress < 1.0
-
-    if tab.is_active:
-        fg = _lerp_color(muted, WHITE, progress)
-    elif fading_out:
-        fg = _lerp_color(WHITE, muted, progress)
+    if _anim.timer_id is None:
+        progress: float | None = None
+        fading_out = False
     else:
-        fg = muted
+        progress = _progress()
+        fading_out = tab.tab_id == _anim.prev_active_id and progress < 1.0
 
     bar = as_rgb(BAR_BG)
-    pill = as_rgb(bg)
-    text = as_rgb(fg)
+    attention_fg = as_rgb(ATTENTION)
+
     is_first = extra_data.prev_tab is None
-    deco = DECO_CELLS + (FIRST_TAB_EXTRA if is_first else 0)
 
-    def _right_cap_bg() -> int:
-        if extra_data.next_tab is not None:
-            return as_rgb(_bg_for(index + 1, total))
-        return bar
+    layout_g = _layout_glyph(tab)
+    left_g = _left_glyph(tab)
+    right_g = _right_glyph(tab)
 
-    # Budget too tight for full pill — draw a compact "…" pill so kitty doesn't
-    # bail out and drop the rest of the tabs.
-    if max_title_length < deco + 1:
+    cap_left = _cw(LEFT_CAP) if is_first else 0
+    cap_right = _cw(RIGHT_CAP) if is_last else 0
+    # " " + layout + " " + left + " " + " " + right + " "
+    inner_deco = _cw(" " + layout_g + " " + left_g + " " + " " + right_g + " ")
+    deco = inner_deco + cap_left + cap_right
+
+    # No padding — return the actual rendered width so kitty packs next tab tight.
+    in_compact = max_title_length < deco + 1
+    if in_compact:
+        title_str = ""
+        title_w = 0
+        total_tab_w = max_title_length
+    else:
+        title_str = _truncate(_format_title(draw_data, tab, index), max_title_length - deco)
+        title_w = _cw(title_str)
+        total_tab_w = deco + title_w
+
+    # Tab N owns gradient range (N-1)/total → N/total. Boundary continuity
+    # holds regardless of width, so tabs can be content-sized.
+    t_start = (index - 1) / max(1, total)
+    t_end = index / max(1, total)
+    t_span = t_end - t_start
+    denom = max(1, total_tab_w - 1)
+
+    def bg_at_offset(offset: int) -> int:
+        return _grad(t_start + t_span * (offset / denom))
+
+    def fg_for(bg_rgb: int) -> int:
+        m = _muted(bg_rgb)
+        if progress is None:
+            return WHITE if tab.is_active else m
+        if tab.is_active:
+            return _lerp_color(m, WHITE, progress)
+        if fading_out:
+            return _lerp_color(WHITE, m, progress)
+        return m
+
+    def emit(ch: str, fg_override: int | None = None) -> None:
+        offset = screen.cursor.x - before
+        bg_rgb = bg_at_offset(offset)
+        screen.cursor.bg = as_rgb(bg_rgb)
+        screen.cursor.fg = fg_override if fg_override is not None else as_rgb(fg_for(bg_rgb))
+        screen.draw(ch)
+
+    def emit_cap(ch: str) -> None:
+        offset = screen.cursor.x - before
+        bg_rgb = bg_at_offset(offset)
+        screen.cursor.bg = bar
+        screen.cursor.fg = as_rgb(bg_rgb)
+        screen.draw(ch)
+
+    # Compact fallback — kitty drops the remaining tabs if any tab overflows.
+    if in_compact:
         if is_first:
-            screen.cursor.fg = pill
-            screen.cursor.bg = bar
-            screen.draw(LEFT_CAP)
-        screen.cursor.fg = text
-        screen.cursor.bg = pill
-        body = max(0, max_title_length - (2 if is_first else 1))
-        if body > 0:
-            screen.draw("…" + " " * (body - 1))
-        screen.cursor.bg = _right_cap_bg()
-        screen.cursor.fg = pill
-        screen.draw(RIGHT_CAP)
+            emit_cap(LEFT_CAP)
+        body = max(0, max_title_length - cap_left - cap_right)
+        for i in range(body):
+            emit("…" if i == 0 else " ")
+        if is_last:
+            emit_cap(RIGHT_CAP)
         end = screen.cursor.x
         screen.cursor.bg = 0
         screen.cursor.fg = 0
         return end
 
     if is_first:
-        screen.cursor.fg = pill
-        screen.cursor.bg = bar
-        screen.draw(LEFT_CAP)
+        emit_cap(LEFT_CAP)
 
-    # Flower on the left and a small heart on the right are drawn on every
-    # tab so the layout stays stable on activation; their colors fade with
-    # the title so the active tab glows white while inactive tabs sit quietly
-    # in the muted hue.
-    screen.cursor.fg = text
-    screen.cursor.bg = pill
-    # Hold bold through the fade-out window so weight doesn't snap off while
-    # the color is still drifting back to muted — keeps the transition smooth.
+    # Hold bold through fade-out so weight doesn't snap off mid-color-drift.
     screen.cursor.bold = tab.is_active or fading_out
-    screen.draw(" ")
-    screen.draw(FLOWER)
-    screen.draw(" ")
-    title_budget = max(1, max_title_length - deco)
-    draw_title(draw_data, screen, tab, index, title_budget)
-    # Title can still overshoot (wide glyphs, template extras) — back up and
-    # drop in an ellipsis so the trailing decoration fits within budget.
-    trailing = 4  # " ", heart, " ", right cap
-    target_x = before + max_title_length - trailing
-    overflow = screen.cursor.x - target_x
-    if overflow > 0:
-        screen.cursor.x -= overflow + 1
-        screen.draw("…")
-    screen.draw(" ")
-    screen.draw(HEART)
-    screen.draw(" ")
+
+    emit(" ")
+    emit(layout_g)
+    emit(" ")
+    if tab.needs_attention and not tab.is_active:
+        emit(left_g, fg_override=attention_fg)
+    else:
+        emit(left_g)
+    emit(" ")
+
+    for ch in title_str:
+        emit(ch)
+
+    emit(" ")
+    emit(right_g)
+    emit(" ")
+
     screen.cursor.bold = False
 
-    screen.cursor.bg = _right_cap_bg()
-    screen.cursor.fg = pill
-    screen.draw(RIGHT_CAP)
+    if is_last:
+        emit_cap(RIGHT_CAP)
 
     end = screen.cursor.x
     screen.cursor.bg = 0

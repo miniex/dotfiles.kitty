@@ -5,17 +5,15 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 ## Features
 
 - **D2Coding** - Korean-friendly monospace font
-- **Nerd Font Icons** - Catch-all PUA fallback to Symbols Nerd Font Mono — every Nerd Font glyph renders (Pomicons, Powerline, FA, FA-Extension, Weather, Devicons, Seti, Codicons, Font Logos, Octicons, Material Design Icons, Custom — including the supplementary plane MDI block at U+F0001+)
-- **Semi-transparent** - 85% background opacity with dark theme
+- **Nerd Font Icons** - All Nerd Font glyph families via PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI incl. supplementary-plane block at `U+F0001+`, Devicons, Codicons, etc.)
+- **Semi-transparent** - 85% opacity dark theme
 - **Clipboard Integration** - Full read/write clipboard support
 - **Kawaii Tab Bar** - Custom Python tab renderer (`tab_bar.py`):
-  - Each tab is a rounded pill (Powerline-Extra caps `` U+E0B6 / `` U+E0B4) framed by a florette `✿` (U+273F) on the left and a `❥` (U+2765) on the right, so every tab carries the same decoration and the layout never shifts when activation changes.
-  - Pill colors are interpolated along a `#98ABCC` → `#E890B0` gradient and adjacent caps borrow the next tab's color, so the strip reads as one continuous ribbon.
-  - Active title + flower + heart render in white & bold; inactive ones use an HSL-muted version of the tab's own color (sat ×0.3, lum ×0.55) so they sit quietly tone-on-tone.
-  - On tab switch the title fg fades muted ↔ white over 300 ms with a smoothstep curve, driven by an `add_timer` ~60 fps repaint loop in the renderer. The previously-active tab holds its bold weight through the fade-out window so weight doesn't snap off while the color is still drifting back to muted.
-  - Per-tab pill color and its HSL-muted variant are memoized (`functools.lru_cache`), so the ~60 fps repaint loop re-uses cached values instead of re-running the gradient math and RGB↔HLS round-trip every frame.
-  - Titles truncate with `…` to fit kitty's per-tab budget; when the budget falls below the decoration size, the pill collapses to a compact `…`-only form so tabs keep shrinking instead of overflowing and getting dropped by kitty's tab-bar layout.
-  - `kitty.conf` re-pins `U+E0A0–U+E0D4` to Symbols Nerd Font Mono so D2Coding's own (rectangular) Powerline placeholders don't win for the tab caps.
+  - Cell-level gradient `#98ABCC` → `#E890B0` across the whole bar. Tab N owns the slice `(N-1)/total → N/total` so tabs are content-sized with no color step at boundaries.
+  - Rounded Powerline-Extra caps (`` / ``) only on the first tab's left and last tab's right.
+  - Per-tab decoration: layout glyph (`▌▐▦═║◫▣`), `✿` (swaps to `‼` on `needs_attention`), title, `❥` (swaps to superscript digit when `num_window_groups > 1`).
+  - Tab switch fades title fg muted ↔ white over 300 ms (smoothstep). Bold persists through fade-out so weight doesn't snap.
+  - `kitty.conf` re-pins `U+E0A0–U+E0D4` to Symbols Nerd Font Mono so D2Coding's rectangular Powerline placeholders don't win for the caps.
 
 ## Configuration
 
