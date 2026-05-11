@@ -76,6 +76,7 @@ The installer clones the repo to `~/.config/kitty`, auto-detects your OS
 
 PRs welcome. Before opening one:
 
+- Install the toolchain: `shfmt`, `shellcheck`, `ruff`.
 - Run `./tools/format.sh` and `./tools/lint.sh` — both must pass clean.
 - Follow the commit prefix convention (`feat:`, `fix:`, `refactor:`, `docs:`, …, all lowercase).
 

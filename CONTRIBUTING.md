@@ -8,15 +8,16 @@ Install on your `$PATH` before working on this repo:
 
 - [`shfmt`](https://github.com/mvdan/sh) — shell script formatter
 - [`shellcheck`](https://www.shellcheck.net/) — shell script linter
+- [`ruff`](https://github.com/astral-sh/ruff) — Python formatter/linter (for `tab_bar.py`)
 
 Examples:
 
 ```bash
 # macOS
-brew install shfmt shellcheck
+brew install shfmt shellcheck ruff
 
 # Arch
-sudo pacman -S shfmt shellcheck
+sudo pacman -S shfmt shellcheck ruff
 ```
 
 ## Workflow
@@ -24,8 +25,8 @@ sudo pacman -S shfmt shellcheck
 Before every commit:
 
 ```bash
-./tools/format.sh   # rewrites install.sh / tools/* via shfmt
-./tools/lint.sh     # shfmt --diff + shellcheck
+./tools/format.sh   # shfmt on shell scripts; ruff format + autofix on tab_bar.py
+./tools/lint.sh     # shfmt --diff + shellcheck + ruff format --check + ruff check
 ```
 
 `lint.sh` exits non-zero on any formatting drift or shellcheck finding. CI / reviewers expect a clean run.

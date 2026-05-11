@@ -1,0 +1,19 @@
+# Ruff config for the kitty custom tab bar module (tab_bar.py).
+# Kitty bundles a recent CPython; py310 is a safe floor.
+line-length = 100
+target-version = "py310"
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"
