@@ -17,7 +17,7 @@ END = (0xE8, 0x90, 0xB0)  # #E890B0
 BAR_BG = 0x1E1E1E
 WHITE = 0xFFFFFF
 # Inactive tab title is rendered as a hue-preserving, lower-saturation,
-# dimmer version of the pill colour. Numbers are tuned so the transition
+# dimmer version of the pill color. Numbers are tuned so the transition
 # to/from white isn't a harsh jump — softer span keeps the fade gentle.
 INACTIVE_TEXT_SAT = 0.3
 INACTIVE_TEXT_LUM = 0.55
@@ -156,13 +156,13 @@ def draw_tab(
         screen.draw(LEFT_CAP)
 
     # Flower on the left and a small heart on the right are drawn on every
-    # tab so the layout stays stable on activation; their colours fade with
+    # tab so the layout stays stable on activation; their colors fade with
     # the title so the active tab glows white while inactive tabs sit quietly
     # in the muted hue.
     screen.cursor.fg = text
     screen.cursor.bg = pill
     # Hold bold through the fade-out window so weight doesn't snap off while
-    # the colour is still drifting back to muted — keeps the transition smooth.
+    # the color is still drifting back to muted — keeps the transition smooth.
     screen.cursor.bold = tab.is_active or fading_out
     screen.draw(" ")
     screen.draw(FLOWER)

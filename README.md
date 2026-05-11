@@ -10,10 +10,10 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 - **Clipboard Integration** - Full read/write clipboard support
 - **Kawaii Tab Bar** - Custom Python tab renderer (`tab_bar.py`):
   - Each tab is a rounded pill (Powerline-Extra caps `` U+E0B6 / `` U+E0B4) framed by an MDI flower `󰴈` (U+F0D08) on the left and a `♥` (U+2665) on the right, so every tab carries the same decoration and the layout never shifts when activation changes.
-  - Pill colours are interpolated along a `#98ABCC` → `#E890B0` gradient and adjacent caps borrow the next tab's colour, so the strip reads as one continuous ribbon.
-  - Active title + flower + heart render in white & bold; inactive ones use an HSL-muted version of the tab's own colour (sat ×0.3, lum ×0.55) so they sit quietly tone-on-tone.
-  - On tab switch the title fg fades muted ↔ white over 300 ms with a smoothstep curve, driven by an `add_timer` ~60 fps repaint loop in the renderer. The previously-active tab holds its bold weight through the fade-out window so weight doesn't snap off while the colour is still drifting back to muted.
-  - Per-tab pill colour and its HSL-muted variant are memoised (`functools.lru_cache`), so the ~60 fps repaint loop re-uses cached values instead of re-running the gradient math and RGB↔HLS round-trip every frame.
+  - Pill colors are interpolated along a `#98ABCC` → `#E890B0` gradient and adjacent caps borrow the next tab's color, so the strip reads as one continuous ribbon.
+  - Active title + flower + heart render in white & bold; inactive ones use an HSL-muted version of the tab's own color (sat ×0.3, lum ×0.55) so they sit quietly tone-on-tone.
+  - On tab switch the title fg fades muted ↔ white over 300 ms with a smoothstep curve, driven by an `add_timer` ~60 fps repaint loop in the renderer. The previously-active tab holds its bold weight through the fade-out window so weight doesn't snap off while the color is still drifting back to muted.
+  - Per-tab pill color and its HSL-muted variant are memoized (`functools.lru_cache`), so the ~60 fps repaint loop re-uses cached values instead of re-running the gradient math and RGB↔HLS round-trip every frame.
   - `kitty.conf` re-pins `U+E0A0–U+E0D4` to Symbols Nerd Font Mono so D2Coding's own (rectangular) Powerline placeholders don't win for the tab caps.
 
 ## Configuration
