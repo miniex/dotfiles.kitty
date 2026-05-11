@@ -1,5 +1,6 @@
 import colorsys
 import time
+from functools import lru_cache
 
 from kitty.boss import get_boss
 from kitty.fast_data_types import Screen, add_timer, remove_timer
@@ -14,6 +15,7 @@ from kitty.tab_bar import (
 START = (0x98, 0xAB, 0xCC)  # #98ABCC
 END = (0xE8, 0x90, 0xB0)  # #E890B0
 BAR_BG = 0x1E1E1E
+WHITE = 0xFFFFFF
 # Inactive tab title is rendered as a hue-preserving, lower-saturation,
 # dimmer version of the pill colour. Numbers are tuned so the transition
 # to/from white isn't a harsh jump — softer span keeps the fade gentle.
@@ -63,6 +65,7 @@ def _tick(timer_id: int) -> None:
     if _now() - _anim["start"] >= ANIM_DURATION:
         remove_timer(timer_id)
         _anim["timer_id"] = None
+        _anim["prev_active_id"] = None
         return
     tm = get_boss().active_tab_manager
     if tm is not None:
@@ -99,6 +102,7 @@ def _lerp_color(a: int, b: int, t: float) -> int:
     )
 
 
+@lru_cache(maxsize=64)
 def _muted(rgb: int) -> int:
     r = ((rgb >> 16) & 0xFF) / 255
     g = ((rgb >> 8) & 0xFF) / 255
@@ -108,6 +112,7 @@ def _muted(rgb: int) -> int:
     return (round(r * 255) << 16) | (round(g * 255) << 8) | round(b * 255)
 
 
+@lru_cache(maxsize=64)
 def _bg_for(idx: int, total: int) -> int:
     t = 0.0 if total <= 1 else (idx - 1) / (total - 1)
     return _gradient(t)
@@ -132,11 +137,12 @@ def draw_tab(
     bg = _bg_for(index, total)
     muted = _muted(bg)
     progress = _progress()
+    fading_out = tab.tab_id == _anim["prev_active_id"] and progress < 1.0
 
     if tab.is_active:
-        fg = _lerp_color(muted, 0xFFFFFF, progress)
-    elif tab.tab_id == _anim["prev_active_id"] and progress < 1.0:
-        fg = _lerp_color(0xFFFFFF, muted, progress)
+        fg = _lerp_color(muted, WHITE, progress)
+    elif fading_out:
+        fg = _lerp_color(WHITE, muted, progress)
     else:
         fg = muted
 
@@ -155,7 +161,9 @@ def draw_tab(
     # in the muted hue.
     screen.cursor.fg = text
     screen.cursor.bg = pill
-    screen.cursor.bold = tab.is_active
+    # Hold bold through the fade-out window so weight doesn't snap off while
+    # the colour is still drifting back to muted — keeps the transition smooth.
+    screen.cursor.bold = tab.is_active or fading_out
     screen.draw(" ")
     screen.draw(FLOWER)
     screen.draw("  ")
