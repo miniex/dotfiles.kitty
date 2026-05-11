@@ -8,7 +8,12 @@ A minimal Kitty terminal emulator configuration with Nerd Font integration and s
 - **Nerd Font Icons** - Catch-all PUA fallback to Symbols Nerd Font Mono — every Nerd Font glyph renders (Pomicons, Powerline, FA, FA-Extension, Weather, Devicons, Seti, Codicons, Font Logos, Octicons, Material Design Icons, Custom — including the supplementary plane MDI block at U+F0001+)
 - **Semi-transparent** - 85% background opacity with dark theme
 - **Clipboard Integration** - Full read/write clipboard support
-- **Gradient Tab Bar** - Custom Python tab renderer (`tab_bar.py`) interpolates each tab's color across `#98ABCC` → `#E890B0`; inactive tabs are dimmed toward the background
+- **Kawaii Tab Bar** - Custom Python tab renderer (`tab_bar.py`):
+  - Each tab is a rounded pill (Powerline-Extra caps `` U+E0B6 / `` U+E0B4) framed by an MDI flower `󰴈` (U+F0D08) on the left and a `♥` (U+2665) on the right, so every tab carries the same decoration and the layout never shifts when activation changes.
+  - Pill colours are interpolated along a `#98ABCC` → `#E890B0` gradient and adjacent caps borrow the next tab's colour, so the strip reads as one continuous ribbon.
+  - Active title + flower + heart render in white & bold; inactive ones use an HSL-muted version of the tab's own colour (sat ×0.3, lum ×0.55) so they sit quietly tone-on-tone.
+  - On tab switch the title fg fades muted ↔ white over 300 ms with a smoothstep curve, driven by an `add_timer` ~60 fps repaint loop in the renderer.
+  - `kitty.conf` re-pins `U+E0A0–U+E0D4` to Symbols Nerd Font Mono so D2Coding's own (rectangular) Powerline placeholders don't win for the tab caps.
 
 ## Configuration
 
