@@ -25,8 +25,8 @@ INACTIVE_TEXT_LUM = 0.55
 # Glyphs via escape sequences — PUA literals can be mangled by tooling.
 LEFT_CAP = ""
 RIGHT_CAP = ""
-FLOWER = "\U000f0d08"
-HEART = "♥"  # ♥ kawaii right-side decoration on every tab
+FLOWER = "✿"  # ✿ left-side decoration on every tab
+HEART = "❥"  # ❥ kawaii right-side decoration on every tab
 
 # Active-switch fade animation. Kitty's tab bar is cell-based, so we can't
 # slide pixels — but we can repaint at ~60 fps for ANIM_DURATION seconds
@@ -36,7 +36,7 @@ ANIM_DURATION = 0.30
 ANIM_TICK = 0.016
 
 # Per-tab decoration cells (spaces + flower + heart + right cap); first tab adds a left cap.
-DECO_CELLS = 8
+DECO_CELLS = 7
 FIRST_TAB_EXTRA = 1
 
 _anim = {
@@ -197,7 +197,7 @@ def draw_tab(
     screen.cursor.bold = tab.is_active or fading_out
     screen.draw(" ")
     screen.draw(FLOWER)
-    screen.draw("  ")
+    screen.draw(" ")
     title_budget = max(1, max_title_length - deco)
     draw_title(draw_data, screen, tab, index, title_budget)
     # Title can still overshoot (wide glyphs, template extras) — back up and
