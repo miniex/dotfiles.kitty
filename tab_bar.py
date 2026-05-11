@@ -35,6 +35,10 @@ HEART = "♥"  # ♥ kawaii right-side decoration on every tab
 ANIM_DURATION = 0.30
 ANIM_TICK = 0.016
 
+# Per-tab decoration cells (spaces + flower + heart + right cap); first tab adds a left cap.
+DECO_CELLS = 8
+FIRST_TAB_EXTRA = 1
+
 _anim = {
     "start": 0.0,
     "active_id": None,
@@ -149,8 +153,35 @@ def draw_tab(
     bar = as_rgb(BAR_BG)
     pill = as_rgb(bg)
     text = as_rgb(fg)
+    is_first = extra_data.prev_tab is None
+    deco = DECO_CELLS + (FIRST_TAB_EXTRA if is_first else 0)
 
-    if extra_data.prev_tab is None:
+    def _right_cap_bg() -> int:
+        if extra_data.next_tab is not None:
+            return as_rgb(_bg_for(index + 1, total))
+        return bar
+
+    # Budget too tight for full pill — draw a compact "…" pill so kitty doesn't
+    # bail out and drop the rest of the tabs.
+    if max_title_length < deco + 1:
+        if is_first:
+            screen.cursor.fg = pill
+            screen.cursor.bg = bar
+            screen.draw(LEFT_CAP)
+        screen.cursor.fg = text
+        screen.cursor.bg = pill
+        body = max(0, max_title_length - (2 if is_first else 1))
+        if body > 0:
+            screen.draw("…" + " " * (body - 1))
+        screen.cursor.bg = _right_cap_bg()
+        screen.cursor.fg = pill
+        screen.draw(RIGHT_CAP)
+        end = screen.cursor.x
+        screen.cursor.bg = 0
+        screen.cursor.fg = 0
+        return end
+
+    if is_first:
         screen.cursor.fg = pill
         screen.cursor.bg = bar
         screen.draw(LEFT_CAP)
@@ -167,17 +198,22 @@ def draw_tab(
     screen.draw(" ")
     screen.draw(FLOWER)
     screen.draw("  ")
-    draw_title(draw_data, screen, tab, index)
+    title_budget = max(1, max_title_length - deco)
+    draw_title(draw_data, screen, tab, index, title_budget)
+    # Title can still overshoot (wide glyphs, template extras) — back up and
+    # drop in an ellipsis so the trailing decoration fits within budget.
+    trailing = 4  # " ", heart, " ", right cap
+    target_x = before + max_title_length - trailing
+    overflow = screen.cursor.x - target_x
+    if overflow > 0:
+        screen.cursor.x -= overflow + 1
+        screen.draw("…")
     screen.draw(" ")
     screen.draw(HEART)
     screen.draw(" ")
     screen.cursor.bold = False
 
-    if extra_data.next_tab is not None:
-        next_bg = _bg_for(index + 1, total)
-        screen.cursor.bg = as_rgb(next_bg)
-    else:
-        screen.cursor.bg = bar
+    screen.cursor.bg = _right_cap_bg()
     screen.cursor.fg = pill
     screen.draw(RIGHT_CAP)
 
