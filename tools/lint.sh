@@ -19,5 +19,5 @@ fi
 
 shfmt -d -i 4 -ci -bn -s install.sh tools/format.sh tools/lint.sh
 shellcheck install.sh tools/format.sh tools/lint.sh
-ruff format --check tab_bar.py tools/gen_logo.py
-ruff check tab_bar.py tools/gen_logo.py
+ruff format --check tab_bar.py
+ruff check tab_bar.py

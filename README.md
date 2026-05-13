@@ -7,7 +7,6 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **D2Coding** — Korean-friendly monospace.
 - **Nerd Font** — PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI, Devicons, Codicons).
 - **Themes** — `themes/dark.conf` (default) / `themes/light.conf`. Swap the `include`, or `kitten themes` for auto dark/light (kitty 0.38+).
-- **Watermark** — 5-petal cherry-blossom in the bottom-right (regen via `tools/gen_logo.py`).
 - **Cursor trail**, **mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
@@ -25,7 +24,6 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 | Font              | D2Coding (size from [OS profile](#os-profiles)) |
 | Color Scheme      | `themes/dark.conf`                              |
 | Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom |
-| Window Logo       | `assets/logo.png` @ bottom-right, alpha 0.30    |
 | Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                   |
 | Scrollback Pager  | Neovim                                          |
 | Cmd-finish Notify | `invisible` (10s threshold)                     |
@@ -72,14 +70,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main
 ```
 
 Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`. Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
-
-## Regenerating the watermark
-
-```bash
-python3 tools/gen_logo.py   # rewrites assets/logo.png (stdlib only)
-```
-
-Edit constants at the top of `tools/gen_logo.py` first.
 
 ## Companion repos
 

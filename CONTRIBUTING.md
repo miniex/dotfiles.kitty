@@ -20,8 +20,6 @@ sh install.sh
 kitty +runpy 'from kitty.config import load_config; load_config("kitty.conf")'
 ```
 
-If you edit `tools/gen_logo.py`, re-run it and commit the refreshed `assets/logo.png`.
-
 ## PR expectations
 
 - One concern per PR. Update `README.md` when behavior, keymaps, themes, or OS profiles change.
