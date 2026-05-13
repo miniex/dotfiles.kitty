@@ -7,7 +7,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **D2Coding** — Korean-friendly monospace.
 - **Nerd Font** — PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI, Devicons, Codicons).
 - **Themes** — `themes/dark.conf` (default) / `themes/light.conf`. Swap the `include`, or `kitten themes` for auto dark/light (kitty 0.38+).
-- **Cursor trail**, **mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
+- **Mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
 - **Kawaii Tab Bar** (`tab_bar.py`):
