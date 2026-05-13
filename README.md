@@ -77,6 +77,13 @@ The installer clones the repo to `~/.config/kitty`, auto-detects your OS
    - [D2Coding](https://github.com/naver/d2codingfont)
    - [Symbols Nerd Font Mono](https://www.nerdfonts.com/)
 
+## Companion repos
+
+- [btop-theme-damin](https://github.com/miniex/btop-theme-damin) — btop theme
+- [fish-theme-damin](https://github.com/miniex/fish-theme-damin) — fish prompt
+- [dotfiles.tmux](https://github.com/miniex/dotfiles.tmux) — tmux config
+- [dotfiles.nvim](https://github.com/miniex/dotfiles.nvim) — Neovim config
+
 ## Contributing
 
 PRs welcome. Before opening one:
