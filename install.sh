@@ -1,7 +1,7 @@
 #!/bin/sh
-# Bootstrap installer for miniex/dotfiles.kitty.
-# Run: sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
-# Or, from inside an already-cloned repo: sh install.sh
+# miniex/dotfiles.kitty installer.
+# Remote: sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
+# In-repo: sh install.sh
 set -eu
 
 REPO_URL="https://github.com/miniex/dotfiles.kitty.git"
@@ -46,7 +46,7 @@ ok() { printf '  %s✓%s  %s\n' "$PINK" "$RESET" "$1"; }
 warn() { printf '  %s⚠%s  %s\n' "$YELLOW" "$RESET" "$1"; }
 err() { printf '  %s✗%s  %s\n' "$RED" "$RESET" "$1" >&2; }
 
-# Read from /dev/tty so prompts work even when piped from curl.
+# Read from /dev/tty so prompts work under `curl | sh`.
 read_answer() {
     answer=''
     if { read -r answer </dev/tty; } 2>/dev/null; then
@@ -69,7 +69,7 @@ prompt_yes() {
 }
 
 prompt_choice() {
-    # $1 = question, $2 = default ("linux" or "macos"); echoes the chosen value
+    # $1=question, $2=default (linux|macos); echoes the choice.
     default=$2
     printf '  %s?%s  %s %s[linux/macos, default: %s]%s ' \
         "$PINK" "$RESET" "$1" "$DIM" "$default" "$RESET" >&2
@@ -93,7 +93,7 @@ detect_os() {
 }
 
 write_os_conf() {
-    # $1 = repo dir, $2 = "linux" or "macos"
+    # $1=repo dir, $2=linux|macos.
     target="$1/os/$2.conf"
     if [ ! -f "$target" ]; then
         err "missing $target — repo layout looks wrong"
@@ -119,8 +119,7 @@ else
     warn "kitty not installed — install Kitty before launching"
 fi
 
-# If we're already inside the repo (e.g. user ran `sh install.sh` from the clone),
-# skip the clone/backup steps and just (re)generate os.conf.
+# In-place mode: invoked from inside the cloned repo — skip clone/backup, just rewrite os.conf.
 SCRIPT_DIR=$(cd "$(dirname "$0")" 2>/dev/null && pwd || printf '')
 IN_PLACE=0
 if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/kitty.conf" ] && [ -d "$SCRIPT_DIR/os" ]; then

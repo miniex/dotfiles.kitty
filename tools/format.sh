@@ -1,5 +1,5 @@
 #!/bin/sh
-# Format shell scripts (shfmt) and Python (ruff).
+# Format shell (shfmt) + Python (ruff).
 set -e
 
 cd "$(dirname "$0")/.."
@@ -17,5 +17,5 @@ if [ -n "$missing" ]; then
 fi
 
 shfmt -w -i 4 -ci -bn -s install.sh tools/format.sh tools/lint.sh
-ruff format tab_bar.py
-ruff check --fix-only tab_bar.py
+ruff format tab_bar.py tools/gen_logo.py
+ruff check --fix-only tab_bar.py tools/gen_logo.py

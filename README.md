@@ -1,99 +1,97 @@
 # Kitty Terminal Configuration
 
-A minimal Kitty terminal emulator configuration with Nerd Font integration and semi-transparent dark theme.
+Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader keychain, dark/light theme files.
 
 ## Features
 
-- **D2Coding** - Korean-friendly monospace font
-- **Nerd Font Icons** - All Nerd Font glyph families via PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI incl. supplementary-plane block at `U+F0001+`, Devicons, Codicons, etc.)
-- **Semi-transparent** - 85% opacity dark theme
-- **Clipboard Integration** - Full read/write clipboard support
-- **Kawaii Tab Bar** - Custom Python tab renderer (`tab_bar.py`):
-  - Cell-level gradient `#98ABCC` → `#E890B0` across the whole bar. Tab N owns the slice `(N-1)/total → N/total` so tabs are content-sized with no color step at boundaries.
-  - Rounded Powerline-Extra caps (`` / ``) only on the first tab's left and last tab's right.
-  - Per-tab decoration: layout glyph (`▌▐▦═║◫▣`), `✿` (swaps to `‼` on `needs_attention`), title, `❥` (swaps to superscript digit when `num_window_groups > 1`).
-  - Tab switch fades title fg muted ↔ white over 300 ms (smoothstep). Bold persists through fade-out so weight doesn't snap.
-  - `kitty.conf` re-pins `U+E0A0–U+E0D4` to Symbols Nerd Font Mono so D2Coding's rectangular Powerline placeholders don't win for the caps.
+- **D2Coding** — Korean-friendly monospace.
+- **Nerd Font** — PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI, Devicons, Codicons).
+- **Themes** — `themes/dark.conf` (default) / `themes/light.conf`. Swap the `include`, or `kitten themes` for auto dark/light (kitty 0.38+).
+- **Watermark** — 5-petal cherry-blossom in the bottom-right (regen via `tools/gen_logo.py`).
+- **Cursor trail**, **mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
+- **Neovim scrollback pager** — `q` to quit, full vim motions.
+- **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
+- **Kawaii Tab Bar** (`tab_bar.py`):
+  - Cell-level gradient `#98ABCC` → `#E890B0`; tab N owns slice `(N-1)/total → N/total`, continuous at boundaries.
+  - Rounded Powerline-Extra caps on first/last tab.
+  - Glyphs: layout (`▌▐▦═║◫▣`) · `✿` (→ `‼` on attention) · title · `❥` (→ superscript when >1 window group).
+  - Active-tab fade muted ↔ white over 300 ms; bold persists.
+  - Bar background follows the active theme via `get_options()`.
 
 ## Configuration
 
-| Setting              | Value                            |
-|----------------------|----------------------------------|
-| Font                 | D2Coding                         |
-| Font Size            | from [OS profile](#os-profiles)  |
-| Cursor               | Block                            |
-| Background           | `#1e1e1e` (85% opacity)          |
-| Foreground           | `#ffffff`                        |
-| Window Border        | `#E890B0`                        |
-| Window Padding       | 2px                              |
-| Tab Bar Style        | `custom` (see `tab_bar.py`)      |
-| Tab Bar Gradient     | `#98ABCC` → `#E890B0`            |
-| Tab Bar Edge         | bottom                           |
+| Setting           | Value                                           |
+|-------------------|-------------------------------------------------|
+| Font              | D2Coding (size from [OS profile](#os-profiles)) |
+| Color Scheme      | `themes/dark.conf`                              |
+| Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom |
+| Window Logo       | `assets/logo.png` @ bottom-right, alpha 0.30    |
+| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                   |
+| Scrollback Pager  | Neovim                                          |
+| Cmd-finish Notify | `invisible` (10s threshold)                     |
 
-OS-specific settings (font size, window decorations, etc.) live in
-`os/linux.conf` and `os/macos.conf`. The active profile is selected by
-`install.sh`, which writes a one-line `os.conf` that `kitty.conf`
-loads via `globinclude`.
+## Themes
+
+Color-scheme only — opacity, fg/bg, borders, `tab_bar_background`.
+
+| File                | Look                                   |
+|---------------------|----------------------------------------|
+| `themes/dark.conf`  | Cherry-blossom on near-black (default) |
+| `themes/light.conf` | Cherry-blossom on warm cream           |
+
+Switch via the `include` line, or `kitten themes --reload-in=all` for system auto-switching.
 
 ## OS Profiles
 
-| File              | Settings                                                           |
-|-------------------|--------------------------------------------------------------------|
-| `os/linux.conf`   | `font_size 12.0`                                                   |
-| `os/macos.conf`   | `font_size 18.0`, `hide_window_decorations titlebar-only`, `map ctrl+shift+z toggle_maximized` |
+| File            | Settings                                                                       |
+|-----------------|--------------------------------------------------------------------------------|
+| `os/linux.conf` | `font_size 12.0`                                                               |
+| `os/macos.conf` | `font_size 18.0`, `hide_window_decorations titlebar-only`, `Ctrl+Shift+Z` zoom |
 
-Switch profiles anytime by re-running `sh ~/.config/kitty/install.sh`,
-or edit `os.conf` by hand to point at a different file.
+Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 ## Key Bindings
 
-| Key              | Description                          |
-|------------------|--------------------------------------|
-| `Ctrl+Shift+K`   | Move tab forward                     |
-| `Ctrl+Shift+J`   | Move tab backward                    |
-| `Ctrl+Shift+Z`   | Toggle maximized window (macOS only) |
+**Tab move** — `Ctrl+Shift+J/K` (back/fwd) · `Ctrl+Shift+Z` zoom (macOS).
+
+**Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
+
+**Leader keychain** (`Ctrl+Shift+Space` →):
+
+| Key | Action                | Key | Action           |
+|-----|-----------------------|-----|------------------|
+| `N` | New tab (cwd)         | `R` | Reload config    |
+| `W` | New window (cwd)      | `T` | Themes picker    |
+| `X` | Close tab             | `L` | Next layout      |
+| `E` | Edit `kitty.conf`     | `C` | Clear scrollback |
 
 ## Installation
 
-**One-liner (curl):**
 ```bash
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
 ```
 
-The installer clones the repo to `~/.config/kitty`, auto-detects your OS
-(Linux / macOS), and writes the matching `os.conf`.
+Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`. Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
 
-**Manual:**
-1. Install Kitty (`sudo pacman -S kitty`, `brew install --cask kitty`, etc.)
-2. Clone the repo:
-   ```bash
-   git clone https://github.com/miniex/dotfiles.kitty.git ~/.config/kitty
-   ```
-3. Run the installer in-place to pick the OS profile:
-   ```bash
-   sh ~/.config/kitty/install.sh
-   ```
-4. Install the required fonts:
-   - [D2Coding](https://github.com/naver/d2codingfont)
-   - [Symbols Nerd Font Mono](https://www.nerdfonts.com/)
+## Regenerating the watermark
+
+```bash
+python3 tools/gen_logo.py   # rewrites assets/logo.png (stdlib only)
+```
+
+Edit constants at the top of `tools/gen_logo.py` first.
 
 ## Companion repos
 
-- [btop-theme-damin](https://github.com/miniex/btop-theme-damin) — btop theme
-- [fish-theme-damin](https://github.com/miniex/fish-theme-damin) — fish prompt
-- [dotfiles.tmux](https://github.com/miniex/dotfiles.tmux) — tmux config
-- [dotfiles.nvim](https://github.com/miniex/dotfiles.nvim) — Neovim config
+- [btop-theme-damin](https://github.com/miniex/btop-theme-damin)
+- [fish-theme-damin](https://github.com/miniex/fish-theme-damin)
+- [dotfiles.tmux](https://github.com/miniex/dotfiles.tmux)
+- [dotfiles.nvim](https://github.com/miniex/dotfiles.nvim)
 
 ## Contributing
 
-PRs welcome. Before opening one:
-
-- Install the toolchain: `shfmt`, `shellcheck`, `ruff`.
-- Run `./tools/format.sh` and `./tools/lint.sh` — both must pass clean.
-- Follow the commit prefix convention (`feat:`, `fix:`, `refactor:`, `docs:`, …, all lowercase).
-
-Full details in [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md). `./tools/format.sh` and `./tools/lint.sh` must pass clean.
 
 ## License
 
-[MIT](LICENSE) © 2026 Han Damin — applies to all code in this repository.
+[MIT](LICENSE) © 2026 Han Damin.

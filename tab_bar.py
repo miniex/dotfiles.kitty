@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from kitty.boss import get_boss
-from kitty.fast_data_types import Screen, add_timer, remove_timer
+from kitty.fast_data_types import Screen, add_timer, get_options, remove_timer
 from kitty.tab_bar import (
     DrawData,
     ExtraData,
@@ -22,20 +22,19 @@ except ImportError:
 
 
 def _cw(s: str) -> int:
-    # wcswidth returns ≤0 for non-printable / unknown; assume 1 cell each.
+    # wcswidth returns ≤0 for non-printable; treat as 1 cell.
     w = _wcswidth(s)
     return w if w > 0 else len(s)
 
 
 START = (0x98, 0xAB, 0xCC)  # #98ABCC
 END = (0xE8, 0x90, 0xB0)  # #E890B0
-BAR_BG = 0x1E1E1E
 WHITE = 0xFFFFFF
 ATTENTION = 0xF5C76A  # warm amber
 INACTIVE_TEXT_SAT = 0.3
 INACTIVE_TEXT_LUM = 0.55
 
-# Literal U+E0B6/E0B4 (Powerline-Extra caps) — many editors silently strip these.
+# Powerline-Extra caps (U+E0B6/E0B4) — some editors strip them.
 LEFT_CAP = ""
 RIGHT_CAP = ""
 FLOWER = "✿"
@@ -59,7 +58,7 @@ SUPER_PLUS = "⁺"
 ANIM_DURATION = 0.30
 ANIM_TICK = 0.016
 
-# 500-bucket quantization — perceptually continuous, lets us memoize per-cell colors.
+# Quantized to memoize per-cell gradient lookups.
 _GRAD_STEPS = 500
 
 
@@ -113,7 +112,7 @@ def _live_tab_ids() -> set:
 def _start_anim(new_active_id: int) -> None:
     if _anim.active_id == new_active_id:
         return
-    # Closed tabs won't render, so a fade-out targeting one is dead state.
+    # Skip fade-out targeting a tab that's already closed.
     live = _live_tab_ids()
     prev = _anim.active_id if _anim.active_id in live else None
     _anim.prev_active_id = prev
@@ -160,6 +159,13 @@ def _muted(rgb: int) -> int:
     return (round(r * 255) << 16) | (round(g * 255) << 8) | round(b * 255)
 
 
+def _bar_bg_int() -> int:
+    # Active theme's tab_bar_background, fallback: window background.
+    opts = get_options()
+    c = opts.tab_bar_background or opts.background
+    return (int(c.red) << 16) | (int(c.green) << 8) | int(c.blue)
+
+
 def _layout_glyph(tab: TabBarData) -> str:
     return LAYOUT_GLYPHS.get(tab.layout_name, LAYOUT_DEFAULT)
 
@@ -178,7 +184,7 @@ def _right_glyph(tab: TabBarData) -> str:
 
 
 def _format_title(draw_data: DrawData, tab: TabBarData, index: int) -> str:
-    # Falls back to a hardcoded template if format() raises on unsupported fields.
+    # Hardcoded fallback if .format() rejects unsupported fields.
     template = getattr(draw_data, "active_title_template", None) if tab.is_active else None
     template = template or getattr(draw_data, "title_template", None) or "{index}: {title}"
     try:
@@ -202,7 +208,7 @@ def _truncate(s: str, max_cells: int) -> str:
     used = 0
     for ch in s:
         w = _cw(ch)
-        if used + w + 1 > max_cells:  # leave room for ellipsis
+        if used + w + 1 > max_cells:  # +1 for ellipsis
             break
         out += ch
         used += w
@@ -232,7 +238,7 @@ def draw_tab(
         progress = _progress()
         fading_out = tab.tab_id == _anim.prev_active_id and progress < 1.0
 
-    bar = as_rgb(BAR_BG)
+    bar = as_rgb(_bar_bg_int())
     attention_fg = as_rgb(ATTENTION)
 
     is_first = extra_data.prev_tab is None
@@ -243,11 +249,11 @@ def draw_tab(
 
     cap_left = _cw(LEFT_CAP) if is_first else 0
     cap_right = _cw(RIGHT_CAP) if is_last else 0
-    # " " + layout + " " + left + " " + " " + right + " "
+    # " layout  left   right "
     inner_deco = _cw(" " + layout_g + " " + left_g + " " + " " + right_g + " ")
     deco = inner_deco + cap_left + cap_right
 
-    # No padding — return the actual rendered width so kitty packs next tab tight.
+    # Return rendered width — no padding, kitty packs the next tab tight.
     in_compact = max_title_length < deco + 1
     if in_compact:
         title_str = ""
@@ -258,8 +264,7 @@ def draw_tab(
         title_w = _cw(title_str)
         total_tab_w = deco + title_w
 
-    # Tab N owns gradient range (N-1)/total → N/total. Boundary continuity
-    # holds regardless of width, so tabs can be content-sized.
+    # Tab N owns gradient slice (N-1)/total → N/total — continuous at boundaries.
     t_start = (index - 1) / max(1, total)
     t_end = index / max(1, total)
     t_span = t_end - t_start
@@ -292,7 +297,7 @@ def draw_tab(
         screen.cursor.fg = as_rgb(bg_rgb)
         screen.draw(ch)
 
-    # Compact fallback — kitty drops the remaining tabs if any tab overflows.
+    # Compact fallback — kitty drops trailing tabs on overflow.
     if in_compact:
         if is_first:
             emit_cap(LEFT_CAP)
@@ -309,7 +314,7 @@ def draw_tab(
     if is_first:
         emit_cap(LEFT_CAP)
 
-    # Hold bold through fade-out so weight doesn't snap off mid-color-drift.
+    # Hold bold through fade-out so weight doesn't snap mid-drift.
     screen.cursor.bold = tab.is_active or fading_out
 
     emit(" ")

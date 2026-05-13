@@ -1,5 +1,4 @@
-# Ruff config for the kitty custom tab bar module (tab_bar.py).
-# Kitty bundles a recent CPython; py310 is a safe floor.
+# Ruff config — kitty bundles a recent CPython, py310 is a safe floor.
 line-length = 100
 target-version = "py310"
 
