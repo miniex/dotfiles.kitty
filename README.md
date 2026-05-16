@@ -41,10 +41,10 @@ Switch via the `include` line, or `kitten themes --reload-in=all` for system aut
 
 ## OS Profiles
 
-| File            | Settings                                                                       |
-|-----------------|--------------------------------------------------------------------------------|
-| `os/linux.conf` | `font_size 12.0`                                                               |
-| `os/macos.conf` | `font_size 18.0`, `hide_window_decorations titlebar-only`, `Ctrl+Shift+Z` zoom |
+| File            | Settings                                                                                              |
+|-----------------|-------------------------------------------------------------------------------------------------------|
+| `os/linux.conf` | `font_size 12.0`                                                                                      |
+| `os/macos.conf` | `font_size 18.0`, titlebar blended into bg (`macos_titlebar_color background`), `Ctrl+Shift+Z` zoom   |
 
 Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
@@ -54,7 +54,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 **Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
-**Leader keychain** (`Ctrl+Shift+Space` →):
+**Leader keychain** — prefix `Ctrl+Shift+Space`, then:
 
 | Key | Action                | Key | Action           |
 |-----|-----------------------|-----|------------------|
