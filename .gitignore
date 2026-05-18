@@ -4,3 +4,6 @@ os.conf
 # Python bytecode from the custom tab_bar.py renderer
 __pycache__/
 *.pyc
+
+# Local-only roadmap
+TODOS.md

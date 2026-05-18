@@ -30,7 +30,7 @@ kitty +runpy 'from kitty.config import load_config; load_config("kitty.conf")'
 
 ## Comment style
 
-One line, terse, explains the *why* when it isn't obvious from the code.
+One line, terse, explains the _why_ when it isn't obvious from the code.
 
 - Section dividers: single-line `# Section name`, no ASCII boxes.
 - Collapse multi-line explanations to one sentence (em dash for cause/effect).
