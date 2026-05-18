@@ -12,6 +12,8 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4 GB pager cache.
 - **Leader chord** — 1.5 s timeout.
+- **Splits** — leader bindings for hsplit/vsplit, `h/j/k/;` focus, zoom, close.
+- **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
 - **Kawaii Tab Bar** (`tab_bar.py`):
@@ -38,7 +40,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 
 ## Themes
 
-Color-scheme only — opacity, fg/bg, borders, `tab_bar_background`.
+Color-scheme only — opacity, fg/bg, borders, `tab_bar_background`, ANSI 16, cursor/selection/url/marks.
 
 | File                | Look                                   |
 | ------------------- | -------------------------------------- |
@@ -70,6 +72,10 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `W` | New window (cwd)  | `T` | Themes picker    |
 | `X` | Close tab         | `L` | Next layout      |
 | `E` | Edit `kitty.conf` | `C` | Clear scrollback |
+| `-` | Split horizontal  | `\` | Split vertical   |
+| `H` | Focus left        | `J` | Focus down       |
+| `K` | Focus up          | `;` | Focus right      |
+| `Z` | Zoom (stack)      | `Q` | Close window     |
 
 ## Installation
 
