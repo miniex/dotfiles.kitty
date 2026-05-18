@@ -16,6 +16,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
+- **`kitten ssh`** — auto-pushes terminfo, recolors per host (`ssh.conf`).
 - **Kawaii Tab Bar** (`tab_bar.py`):
     - Cell-level gradient `#98ABCC` → `#E890B0`; tab N owns slice `(N-1)/total → N/total`, continuous at boundaries.
     - Rounded Powerline-Extra caps on first/last tab.
@@ -51,10 +52,10 @@ Switch via the `include` line, or `kitten themes --reload-in=all` for system aut
 
 ## OS Profiles
 
-| File            | Settings                                                                                            |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| `os/linux.conf` | `font_size 12.0`                                                                                    |
-| `os/macos.conf` | `font_size 18.0`, titlebar blended into bg (`macos_titlebar_color background`), `Ctrl+Shift+Z` zoom |
+| File            | Settings                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| `os/linux.conf` | `font_size 12.0`                                                                               |
+| `os/macos.conf` | `font_size 18.0`, titlebar blended into bg, `Ctrl+Shift+Z` zoom, remember window position/size |
 
 Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
@@ -76,6 +77,16 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `H` | Focus left        | `J` | Focus down       |
 | `K` | Focus up          | `;` | Focus right      |
 | `Z` | Zoom (stack)      | `Q` | Close window     |
+
+## SSH
+
+`ssh.conf` is auto-loaded by `kitten ssh`. To use it, alias `ssh` in your shell rc:
+
+```sh
+alias ssh='kitten ssh'
+```
+
+Default schemes: cherry-blossom (`*`), **Red Sands** (`prod-*`/`*.prod`, safety net), **Solarized Dark** (`staging-*`).
 
 ## Installation
 
