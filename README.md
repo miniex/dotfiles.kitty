@@ -14,6 +14,9 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Leader chord** — 1.5 s timeout.
 - **Splits** — leader bindings for hsplit/vsplit, `h/j/k/;` focus, zoom, close.
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
+- **Command palette** — `Leader>P` fuzzy-finds every action.
+- **Scrollback nav** — hover scrollbar, `[/]` prompt jumps, `/` search, `g/y` last-cmd output/copy.
+- **Ctrl-L** — clears screen + scrollback in one shot.
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
 - **`kitten ssh`** — auto-pushes terminfo, recolors per host (`ssh.conf`).
@@ -26,18 +29,18 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 
 ## Configuration
 
-| Setting           | Value                                               |
-| ----------------- | --------------------------------------------------- |
-| Font              | D2Coding (size from [OS profile](#os-profiles))     |
-| Color Scheme      | `themes/dark.conf`                                  |
-| Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom     |
-| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                       |
-| Scrollback        | 100 k lines · Neovim pager · 4 GB cache             |
-| Paste Safety      | Quote URLs · strip control codes · confirm if large |
-| Bell              | Audio off, window alert on                          |
-| Leader Timeout    | 1.5 s                                               |
-| Update Check      | Disabled                                            |
-| Cmd-finish Notify | `invisible` (10s threshold)                         |
+| Setting           | Value                                                     |
+| ----------------- | --------------------------------------------------------- |
+| Font              | D2Coding (size from [OS profile](#os-profiles))           |
+| Color Scheme      | `themes/dark.conf`                                        |
+| Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom           |
+| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                             |
+| Scrollback        | 100 k lines · Neovim pager · 4 GB cache · hover scrollbar |
+| Paste Safety      | Quote URLs · strip control codes · confirm if large       |
+| Bell              | Audio off, window alert on                                |
+| Leader Timeout    | 1.5 s                                                     |
+| Update Check      | Disabled                                                  |
+| Cmd-finish Notify | `invisible` (10s threshold)                               |
 
 ## Themes
 
@@ -65,6 +68,8 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 **Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
+**Shell-integration** — `Ctrl+Shift+G/Y` last-cmd output/copy · `Ctrl+Shift+/` search scrollback · `Ctrl+Shift+[/]` prev/next prompt · `Ctrl+Shift+L` clear screen + scrollback.
+
 **Leader keychain** — prefix `Ctrl+Shift+Space`, then (1.5 s window):
 
 | Key | Action            | Key | Action           |
@@ -77,6 +82,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `H` | Focus left        | `J` | Focus down       |
 | `K` | Focus up          | `;` | Focus right      |
 | `Z` | Zoom (stack)      | `Q` | Close window     |
+| `P` | Command palette   | —   | —                |
 
 ## SSH
 
