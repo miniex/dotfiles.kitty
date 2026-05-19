@@ -64,7 +64,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 ## Key Bindings
 
-**Tab move** — `Ctrl+Shift+J/K` (back/fwd) · `Ctrl+Shift+Z` zoom (macOS).
+**Tab move** — `Ctrl+Shift+J/K` (back/fwd) · `Ctrl+Shift+1…9/0` jump to tab 1–10 · `Ctrl+Shift+Z` zoom (macOS).
 
 **Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
