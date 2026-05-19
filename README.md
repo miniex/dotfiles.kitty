@@ -8,7 +8,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Nerd Font** — PUA catch-all to Symbols Nerd Font Mono (Powerline, FA, MDI, Devicons, Codicons).
 - **Themes** — `themes/dark.conf` (default) / `themes/light.conf`. Swap the `include`, or `kitten themes` for auto dark/light (kitty 0.38+).
 - **Mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
-- **Quiet** — bell off, no update ping, inactive splits dimmed.
+- **Quiet** — bell off, no update ping.
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — 1.5 s timeout.
