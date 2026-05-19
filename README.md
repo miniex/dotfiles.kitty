@@ -26,6 +26,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
     - Glyphs: layout (`▌▐▦═║◫▣`) · `✿` (→ `‼` on attention) · title · `❥` (→ superscript when >1 window group).
     - Active-tab fade muted ↔ white over 300 ms; bold persists.
     - Bar background follows the active theme via `get_options()`.
+    - Fixed-width tabs (`FIXED_TAB_WIDTH = 24` cells); shrinks only when kitty's per-tab budget forces it.
 
 ## Configuration
 

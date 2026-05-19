@@ -55,6 +55,9 @@ LAYOUT_DEFAULT = "◇"
 SUPER_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 SUPER_PLUS = "⁺"
 
+# Fixed per-tab cell width; kitty's per-tab budget shrinks it under overflow.
+FIXED_TAB_WIDTH = 24
+
 ANIM_DURATION = 0.30
 ANIM_TICK = 0.016
 
@@ -253,16 +256,20 @@ def draw_tab(
     inner_deco = _cw(" " + layout_g + " " + left_g + " " + " " + right_g + " ")
     deco = inner_deco + cap_left + cap_right
 
-    # Return rendered width — no padding, kitty packs the next tab tight.
-    in_compact = max_title_length < deco + 1
+    # Clamp fixed width to kitty's per-tab budget so overflow still compresses.
+    target_w = min(FIXED_TAB_WIDTH, max_title_length)
+    in_compact = target_w < deco + 1
     if in_compact:
         title_str = ""
         title_w = 0
-        total_tab_w = max_title_length
+        pad_w = 0
+        total_tab_w = target_w
     else:
-        title_str = _truncate(_format_title(draw_data, tab, index), max_title_length - deco)
+        avail = target_w - deco
+        title_str = _truncate(_format_title(draw_data, tab, index), avail)
         title_w = _cw(title_str)
-        total_tab_w = deco + title_w
+        pad_w = max(0, avail - title_w)
+        total_tab_w = target_w
 
     # Tab N owns gradient slice (N-1)/total → N/total — continuous at boundaries.
     t_start = (index - 1) / max(1, total)
@@ -301,7 +308,7 @@ def draw_tab(
     if in_compact:
         if is_first:
             emit_cap(LEFT_CAP)
-        body = max(0, max_title_length - cap_left - cap_right)
+        body = max(0, target_w - cap_left - cap_right)
         for i in range(body):
             emit("…" if i == 0 else " ")
         if is_last:
@@ -328,6 +335,8 @@ def draw_tab(
 
     for ch in title_str:
         emit(ch)
+    for _ in range(pad_w):
+        emit(" ")
 
     emit(" ")
     emit(right_g)
