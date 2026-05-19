@@ -10,7 +10,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Mouse-hide on type**, **long-cmd notification** (≥10s unfocused).
 - **Quiet** — bell off, no update ping, inactive splits dimmed.
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
-- **100 k scrollback** + 4 GB pager cache.
+- **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — 1.5 s timeout.
 - **Splits** — leader bindings for hsplit/vsplit, `h/j/k/;` focus, zoom, close.
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
@@ -29,18 +29,18 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 
 ## Configuration
 
-| Setting           | Value                                                     |
-| ----------------- | --------------------------------------------------------- |
-| Font              | D2Coding (size from [OS profile](#os-profiles))           |
-| Color Scheme      | `themes/dark.conf`                                        |
-| Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom           |
-| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                             |
-| Scrollback        | 100 k lines · Neovim pager · 4 GB cache · hover scrollbar |
-| Paste Safety      | Quote URLs · strip control codes · confirm if large       |
-| Bell              | Audio off, window alert on                                |
-| Leader Timeout    | 1.5 s                                                     |
-| Update Check      | Disabled                                                  |
-| Cmd-finish Notify | `invisible` (10s threshold)                               |
+| Setting           | Value                                                        |
+| ----------------- | ------------------------------------------------------------ |
+| Font              | D2Coding (size from [OS profile](#os-profiles))              |
+| Color Scheme      | `themes/dark.conf`                                           |
+| Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom              |
+| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                                |
+| Scrollback        | 100 k lines · Neovim pager · 4096 MB cache · hover scrollbar |
+| Paste Safety      | Quote URLs · strip control codes · confirm if large          |
+| Bell              | Audio off, window alert on                                   |
+| Leader Timeout    | 1.5 s                                                        |
+| Update Check      | Disabled                                                     |
+| Cmd-finish Notify | `invisible` (10s threshold)                                  |
 
 ## Themes
 
