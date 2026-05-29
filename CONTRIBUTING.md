@@ -20,6 +20,12 @@ sh install.sh
 kitty +runpy 'from kitty.config import load_config; load_config("kitty.conf")'
 ```
 
+After touching `tab_bar.py`, confirm it still imports cleanly:
+
+```bash
+kitty +runpy 'import sys; sys.path.insert(0, "."); import tab_bar'
+```
+
 ## PR expectations
 
 - One concern per PR. Update `README.md` when behavior, keymaps, themes, or OS profiles change.

@@ -17,7 +17,7 @@ if [ -n "$missing" ]; then
     exit 1
 fi
 
-shfmt -d -i 4 -ci -bn -s install.sh tools/format.sh tools/lint.sh
-shellcheck install.sh tools/format.sh tools/lint.sh
+find . -name '*.sh' -not -path './.git/*' -exec shfmt -d -i 4 -ci -bn -s {} +
+find . -name '*.sh' -not -path './.git/*' -exec shellcheck {} +
 ruff format --check tab_bar.py
 ruff check tab_bar.py

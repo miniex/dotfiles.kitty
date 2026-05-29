@@ -12,13 +12,13 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — 1.5 s timeout.
-- **Splits** — leader bindings for hsplit/vsplit, `h/j/k/;` focus, zoom, close.
+- **Splits** — default layout; leader bindings for hsplit/vsplit, `h/j/k/;` focus, arrow-key resize, zoom, close.
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Command palette** — `Leader>P` fuzzy-finds every action.
 - **Scrollback nav** — hover scrollbar, `[/]` prompt jumps, `/` search, `g/y` last-cmd output/copy.
 - **Ctrl-L** — clears screen + scrollback in one shot.
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
-- **`kitty @` remote control** — per-PID socket at `/tmp/kitty-{kitty_pid}`.
+- **`kitty @` remote control** — `socket-only`, per-PID socket at `/tmp/kitty-{kitty_pid}`.
 - **`kitten ssh`** — auto-pushes terminfo, recolors per host (`ssh.conf`).
 - **Kawaii Tab Bar** (`tab_bar.py`):
     - Cell-level gradient `#98ABCC` → `#E890B0`; tab N owns slice `(N-1)/total → N/total`, continuous at boundaries.
@@ -35,10 +35,11 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 | Font              | D2Coding (size from [OS profile](#os-profiles))              |
 | Color Scheme      | `themes/dark.conf`                                           |
 | Tab Bar           | `custom` gradient `#98ABCC` → `#E890B0`, bottom              |
-| Remote Control    | `unix:/tmp/kitty-{kitty_pid}`                                |
+| Remote Control    | `socket-only` · `unix:/tmp/kitty-{kitty_pid}`                |
 | Scrollback        | 100 k lines · Neovim pager · 4096 MB cache · hover scrollbar |
 | Paste Safety      | Quote URLs · strip control codes · confirm if large          |
 | Bell              | Audio off, window alert on                                   |
+| Window Close      | Confirm only if a non-shell program is running (`-1`)        |
 | Leader Timeout    | 1.5 s                                                        |
 | Update Check      | Disabled                                                     |
 | Cmd-finish Notify | `invisible` (10s threshold)                                  |
@@ -67,23 +68,26 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 **Tab move** — `Ctrl+Shift+J/K` (back/fwd) · `Ctrl+Shift+1…9/0` jump to tab 1–10 · `Ctrl+Shift+Z` zoom (macOS).
 
+**Font size** — `Ctrl+Shift+=` / `Ctrl+Shift+-` step ±1.0 · `Ctrl+Shift+Backspace` reset.
+
 **Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
 **Shell-integration** — `Ctrl+Shift+G/Y` last-cmd output/copy · `Ctrl+Shift+/` search scrollback · `Ctrl+Shift+[/]` prev/next prompt · `Ctrl+Shift+L` clear screen + scrollback.
 
 **Leader keychain** — prefix `Ctrl+Shift+Space`, then (1.5 s window):
 
-| Key | Action            | Key | Action           |
-| --- | ----------------- | --- | ---------------- |
-| `N` | New tab (cwd)     | `R` | Reload config    |
-| `W` | New window (cwd)  | `T` | Themes picker    |
-| `X` | Close tab         | `L` | Next layout      |
-| `E` | Edit `kitty.conf` | `C` | Clear scrollback |
-| `-` | Split horizontal  | `\` | Split vertical   |
-| `H` | Focus left        | `J` | Focus down       |
-| `K` | Focus up          | `;` | Focus right      |
-| `Z` | Zoom (stack)      | `Q` | Close window     |
-| `P` | Command palette   | —   | —                |
+| Key   | Action             | Key   | Action            |
+| ----- | ------------------ | ----- | ----------------- |
+| `N`   | New tab (cwd)      | `R`   | Reload config     |
+| `W`   | New window (cwd)   | `T`   | Themes picker     |
+| `X`   | Close tab          | `L`   | Next layout       |
+| `E`   | Edit `kitty.conf`  | `C`   | Clear scrollback  |
+| `-`   | Split horizontal   | `\`   | Split vertical    |
+| `H`   | Focus left         | `J`   | Focus down        |
+| `K`   | Focus up           | `;`   | Focus right       |
+| `Z`   | Zoom (stack)       | `Q`   | Close window      |
+| `P`   | Command palette    | `0`   | Reset split size  |
+| `←/→` | Resize narrow/wide | `↑/↓` | Resize tall/short |
 
 ## SSH
 

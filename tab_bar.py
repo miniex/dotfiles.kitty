@@ -1,5 +1,6 @@
 import colorsys
 import time
+import weakref
 from dataclasses import dataclass
 from functools import lru_cache
 
@@ -73,7 +74,16 @@ class AnimState:
     timer_id: int | None = None
 
 
-_anim = AnimState()
+# Per-tab-manager state, keyed weakly so closed OS windows drop out.
+_anim_states: "weakref.WeakKeyDictionary[object, AnimState]" = weakref.WeakKeyDictionary()
+
+
+def _anim_for(tm) -> AnimState:
+    st = _anim_states.get(tm)
+    if st is None:
+        st = AnimState()
+        _anim_states[tm] = st
+    return st
 
 
 def _now() -> float:
@@ -85,8 +95,8 @@ def _ease(t: float) -> float:
     return t * t * (3.0 - 2.0 * t)
 
 
-def _progress() -> float:
-    elapsed = _now() - _anim.start
+def _progress(st: AnimState) -> float:
+    elapsed = _now() - st.start
     if elapsed <= 0.0:
         return 0.0
     if elapsed >= ANIM_DURATION:
@@ -95,34 +105,38 @@ def _progress() -> float:
 
 
 def _tick(timer_id: int) -> None:
-    if _now() - _anim.start >= ANIM_DURATION:
+    # Find the manager whose timer fired.
+    match = next(
+        ((tm, st) for tm, st in _anim_states.items() if st.timer_id == timer_id),
+        None,
+    )
+    if match is None:
         remove_timer(timer_id)
-        _anim.timer_id = None
-        _anim.prev_active_id = None
         return
-    tm = get_boss().active_tab_manager
-    if tm is not None:
-        tm.mark_tab_bar_dirty()
+    tm, st = match
+    if _now() - st.start >= ANIM_DURATION:
+        remove_timer(timer_id)
+        st.timer_id = None
+        st.prev_active_id = None
+        return
+    tm.mark_tab_bar_dirty()
 
 
-def _live_tab_ids() -> set:
-    tm = get_boss().active_tab_manager
-    if tm is None:
-        return set()
+def _live_tab_ids(tm) -> set:
     return {getattr(t, "id", None) for t in tm.tabs}
 
 
-def _start_anim(new_active_id: int) -> None:
-    if _anim.active_id == new_active_id:
+def _start_anim(tm, new_active_id: int) -> None:
+    st = _anim_for(tm)
+    if st.active_id == new_active_id:
         return
     # Skip fade-out targeting a tab that's already closed.
-    live = _live_tab_ids()
-    prev = _anim.active_id if _anim.active_id in live else None
-    _anim.prev_active_id = prev
-    _anim.active_id = new_active_id
-    _anim.start = _now()
-    if _anim.timer_id is None:
-        _anim.timer_id = add_timer(_tick, ANIM_TICK, True)
+    live = _live_tab_ids(tm)
+    st.prev_active_id = st.active_id if st.active_id in live else None
+    st.active_id = new_active_id
+    st.start = _now()
+    if st.timer_id is None:
+        st.timer_id = add_timer(_tick, ANIM_TICK, True)
 
 
 def _lerp(a: int, b: int, t: float) -> int:
@@ -186,20 +200,39 @@ def _right_glyph(tab: TabBarData) -> str:
     return SUPER_PLUS
 
 
-def _format_title(draw_data: DrawData, tab: TabBarData, index: int) -> str:
+@lru_cache(maxsize=256)
+def _render_template(
+    template: str,
+    index: int,
+    title: str,
+    layout_name: str,
+    num_windows: int,
+    num_window_groups: int,
+) -> str:
     # Hardcoded fallback if .format() rejects unsupported fields.
-    template = getattr(draw_data, "active_title_template", None) if tab.is_active else None
-    template = template or getattr(draw_data, "title_template", None) or "{index}: {title}"
     try:
         return template.format(
             index=index,
-            title=tab.title,
-            layout_name=tab.layout_name,
-            num_windows=tab.num_windows,
-            num_window_groups=tab.num_window_groups,
+            title=title,
+            layout_name=layout_name,
+            num_windows=num_windows,
+            num_window_groups=num_window_groups,
         )
     except (KeyError, ValueError, AttributeError):
-        return f"{index}: {tab.title}"
+        return f"{index}: {title}"
+
+
+def _format_title(draw_data: DrawData, tab: TabBarData, index: int) -> str:
+    template = getattr(draw_data, "active_title_template", None) if tab.is_active else None
+    template = template or getattr(draw_data, "title_template", None) or "{index}: {title}"
+    return _render_template(
+        template,
+        index,
+        tab.title,
+        tab.layout_name,
+        tab.num_windows,
+        tab.num_window_groups,
+    )
 
 
 def _truncate(s: str, max_cells: int) -> str:
@@ -218,6 +251,14 @@ def _truncate(s: str, max_cells: int) -> str:
     return out + "…"
 
 
+def _tm_for_tab(tab_id: int):
+    # Match the drawn tab to its manager; the active manager is wrong for inactive windows.
+    for tm in get_boss().all_tab_managers:
+        if any(getattr(t, "id", None) == tab_id for t in tm.tabs):
+            return tm
+    return None
+
+
 def draw_tab(
     draw_data: DrawData,
     screen: Screen,
@@ -228,18 +269,20 @@ def draw_tab(
     is_last: bool,
     extra_data: ExtraData,
 ) -> int:
-    tm = get_boss().active_tab_manager
+    tm = _tm_for_tab(tab.tab_id) or get_boss().active_tab_manager
     total = len(tm.tabs) if tm is not None else 1
 
-    if tab.is_active:
-        _start_anim(tab.tab_id)
+    if tab.is_active and tm is not None:
+        _start_anim(tm, tab.tab_id)
 
-    if _anim.timer_id is None:
-        progress: float | None = None
+    st = _anim_for(tm) if tm is not None else None
+    progress: float | None
+    if st is None or st.timer_id is None:
+        progress = None
         fading_out = False
     else:
-        progress = _progress()
-        fading_out = tab.tab_id == _anim.prev_active_id and progress < 1.0
+        progress = _progress(st)
+        fading_out = tab.tab_id == st.prev_active_id and progress < 1.0
 
     bar = as_rgb(_bar_bg_int())
     attention_fg = as_rgb(ATTENTION)
