@@ -253,10 +253,14 @@ def _truncate(s: str, max_cells: int) -> str:
 
 def _tm_for_tab(tab_id: int):
     # Match the drawn tab to its manager; the active manager is wrong for inactive windows.
-    for tm in get_boss().all_tab_managers:
+    mgrs = list(get_boss().all_tab_managers)
+    # One OS window (the common case): all tabs are its, skip the scan.
+    if len(mgrs) == 1:
+        return mgrs[0]
+    for tm in mgrs:
         if any(getattr(t, "id", None) == tab_id for t in tm.tabs):
             return tm
-    return None
+    return mgrs[0] if mgrs else None
 
 
 def draw_tab(
