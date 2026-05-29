@@ -12,7 +12,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — 1.5 s timeout.
-- **Splits** — default layout; leader bindings for hsplit/vsplit, `h/j/k/;` focus, arrow-key resize, zoom, close.
+- **Splits** — leader bindings for hsplit/vsplit (cycle to the splits layout with `Leader>L`), `h/j/k/;` focus, arrow-key resize, zoom, close.
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Command palette** — `Leader>P` fuzzy-finds every action.
 - **Scrollback nav** — hover scrollbar, `[/]` prompt jumps, `/` search, `g/y` last-cmd output/copy.
@@ -22,8 +22,8 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **`kitten ssh`** — auto-pushes terminfo, recolors per host (`ssh.conf`).
 - **Kawaii Tab Bar** (`tab_bar.py`):
     - Cell-level gradient `#98ABCC` → `#E890B0`; tab N owns slice `(N-1)/total → N/total`, continuous at boundaries.
-    - Rounded Powerline-Extra caps on first/last tab.
-    - Glyphs: layout (`▌▐▦═║◫▣`) · `✿` (→ `‼` on attention) · title · `❥` (→ superscript when >1 window group).
+    - Rounded Powerline-Extra caps on the first/last tab; `▌` divider between tabs.
+    - Glyphs: `✿` (→ `‼` on attention) · title · `❥` (→ superscript when >1 window group).
     - Active-tab fade muted ↔ white over 300 ms; bold persists.
     - Bar background follows the active theme via `get_options()`.
     - Fixed-width tabs (`FIXED_TAB_WIDTH = 24` cells); shrinks only when kitty's per-tab budget forces it.

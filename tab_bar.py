@@ -38,20 +38,10 @@ INACTIVE_TEXT_LUM = 0.55
 # Powerline-Extra caps (U+E0B6/E0B4) — some editors strip them.
 LEFT_CAP = ""
 RIGHT_CAP = ""
+SEP = "▌"  # divider between tabs
 FLOWER = "✿"
 BELL = "‼"
 HEART = "❥"
-
-LAYOUT_GLYPHS = {
-    "tall": "▌",
-    "fat": "▐",
-    "grid": "▦",
-    "horizontal": "═",
-    "vertical": "║",
-    "splits": "◫",
-    "stack": "▣",
-}
-LAYOUT_DEFAULT = "◇"
 
 SUPER_DIGITS = "⁰¹²³⁴⁵⁶⁷⁸⁹"
 SUPER_PLUS = "⁺"
@@ -183,10 +173,6 @@ def _bar_bg_int() -> int:
     return (int(c.red) << 16) | (int(c.green) << 8) | int(c.blue)
 
 
-def _layout_glyph(tab: TabBarData) -> str:
-    return LAYOUT_GLYPHS.get(tab.layout_name, LAYOUT_DEFAULT)
-
-
 def _left_glyph(tab: TabBarData) -> str:
     return BELL if tab.needs_attention else FLOWER
 
@@ -293,14 +279,14 @@ def draw_tab(
 
     is_first = extra_data.prev_tab is None
 
-    layout_g = _layout_glyph(tab)
     left_g = _left_glyph(tab)
     right_g = _right_glyph(tab)
 
-    cap_left = _cw(LEFT_CAP) if is_first else 0
+    lead_left = (_cw(LEFT_CAP) + 1) if is_first else 1  # tab 1: cap + space; else a space
+    cap_left = lead_left + _cw(SEP)
     cap_right = _cw(RIGHT_CAP) if is_last else 0
-    # " layout  left   right "
-    inner_deco = _cw(" " + layout_g + " " + left_g + " " + " " + right_g + " ")
+    # " left   right "
+    inner_deco = _cw(" " + left_g + " " + " " + right_g + " ")
     deco = inner_deco + cap_left + cap_right
 
     # Clamp fixed width to kitty's per-tab budget so overflow still compresses.
@@ -355,6 +341,8 @@ def draw_tab(
     if in_compact:
         if is_first:
             emit_cap(LEFT_CAP)
+        emit(" ")
+        emit(SEP)
         body = max(0, target_w - cap_left - cap_right)
         for i in range(body):
             emit("…" if i == 0 else " ")
@@ -367,12 +355,13 @@ def draw_tab(
 
     if is_first:
         emit_cap(LEFT_CAP)
+    emit(" ")
 
     # Hold bold through fade-out so weight doesn't snap mid-drift.
     screen.cursor.bold = tab.is_active or fading_out
 
-    emit(" ")
-    emit(layout_g)
+    emit(SEP)
+
     emit(" ")
     if tab.needs_attention and not tab.is_active:
         emit(left_g, fg_override=attention_fg)
