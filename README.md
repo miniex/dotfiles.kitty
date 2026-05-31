@@ -11,7 +11,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Quiet** — bell off, no update ping.
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4096 MB pager cache.
-- **Leader chord** — 1.5 s timeout.
+- **Leader chord** — `Ctrl+Shift+Space` prefix, then an action key.
 - **Splits** — leader bindings for hsplit/vsplit (cycle to the splits layout with `Leader>L`), `h/j/k/;` focus, arrow-key resize, zoom, close.
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Command palette** — `Leader>P` fuzzy-finds every action.
@@ -40,7 +40,6 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 | Paste Safety      | Quote URLs · strip control codes · confirm if large          |
 | Bell              | Audio off, window alert on                                   |
 | Window Close      | Confirm only if a non-shell program is running (`-1`)        |
-| Leader Timeout    | 1.5 s                                                        |
 | Update Check      | Disabled                                                     |
 | Cmd-finish Notify | `invisible` (10s threshold)                                  |
 
@@ -57,9 +56,9 @@ Switch via the `include` line, or `kitten themes --reload-in=all` for system aut
 
 ## OS Profiles
 
-| File            | Settings                                                                                       |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| `os/linux.conf` | `font_size 12.0`                                                                               |
+| File            | Settings                                                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `os/linux.conf` | `font_size 12.0`                                                                                                     |
 | `os/macos.conf` | `font_size 18.0`, titlebar blended into bg, `Ctrl+Shift+Z` zoom, `Cmd+C/V` copy/paste, remember window position/size |
 
 Re-run `sh install.sh` to switch, or edit `os.conf` directly.
@@ -72,11 +71,11 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 **Font size** — `Ctrl+Shift+=` / `Ctrl+Shift+-` step ±1.0 · `Ctrl+Shift+Backspace` reset.
 
-**Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+Y` git hash · `Ctrl+Shift+I` IP → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
+**Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+I` IP · `Leader>G` git hash → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
 **Shell-integration** — `Ctrl+Shift+G/Y` last-cmd output/copy · `Ctrl+Shift+/` search scrollback · `Ctrl+Shift+[/]` prev/next prompt · `Ctrl+Shift+L` clear screen + scrollback.
 
-**Leader keychain** — prefix `Ctrl+Shift+Space`, then (1.5 s window):
+**Leader keychain** — prefix `Ctrl+Shift+Space`, then:
 
 | Key   | Action             | Key   | Action            |
 | ----- | ------------------ | ----- | ----------------- |
@@ -88,8 +87,9 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `H`   | Focus left         | `J`   | Focus down        |
 | `K`   | Focus up           | `;`   | Focus right       |
 | `Z`   | Zoom (stack)       | `Q`   | Close window      |
-| `P`   | Command palette    | `0`   | Reset split size  |
+| `P`   | Command palette    | `G`   | Git-hash hint     |
 | `←/→` | Resize narrow/wide | `↑/↓` | Resize tall/short |
+| `0`   | Reset split size   |       |                   |
 
 ## SSH
 
