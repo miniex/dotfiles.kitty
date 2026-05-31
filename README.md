@@ -60,13 +60,15 @@ Switch via the `include` line, or `kitten themes --reload-in=all` for system aut
 | File            | Settings                                                                                       |
 | --------------- | ---------------------------------------------------------------------------------------------- |
 | `os/linux.conf` | `font_size 12.0`                                                                               |
-| `os/macos.conf` | `font_size 18.0`, titlebar blended into bg, `Ctrl+Shift+Z` zoom, remember window position/size |
+| `os/macos.conf` | `font_size 18.0`, titlebar blended into bg, `Ctrl+Shift+Z` zoom, `Cmd+C/V` copy/paste, remember window position/size |
 
 Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 ## Key Bindings
 
 **Tab move** — `Ctrl+Shift+J/K` (back/fwd) · `Ctrl+Shift+1…9/0` jump to tab 1–10 · `Ctrl+Shift+Z` zoom (macOS).
+
+**Clipboard** — `Ctrl+Shift+C/V` copy/paste; on macOS `Cmd+C/V` work too.
 
 **Font size** — `Ctrl+Shift+=` / `Ctrl+Shift+-` step ±1.0 · `Ctrl+Shift+Backspace` reset.
 
