@@ -12,7 +12,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **Paste guarded** — URL quote, control-code strip, confirm if large.
 - **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — `Ctrl+Shift+Space` prefix, then an action key.
-- **Splits** — leader bindings for hsplit/vsplit (cycle to the splits layout with `Leader>L`), `h/j/k/;` focus, arrow-key resize, zoom, close.
+- **Splits** — splits is the default layout; leader bindings for hsplit/vsplit, `h/j/k/;` focus, arrow-key resize, zoom, close (`Leader>L` toggles splits ↔ stack).
 - **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
 - **Command palette** — `Leader>P` fuzzy-finds every action.
 - **Scrollback nav** — hover scrollbar, `[/]` prompt jumps, `/` search, `g/y` last-cmd output/copy.
