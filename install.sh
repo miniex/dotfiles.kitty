@@ -77,7 +77,6 @@ prompt_choice() {
     case "$answer" in
         l | L | linux | Linux | LINUX) printf 'linux' ;;
         m | M | mac | Mac | MAC | macos | macOS | MACOS | darwin | Darwin) printf 'macos' ;;
-        '') printf '%s' "$default" ;;
         *) printf '%s' "$default" ;;
     esac
 }

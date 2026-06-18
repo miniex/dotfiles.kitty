@@ -5,5 +5,8 @@ os.conf
 __pycache__/
 *.pyc
 
+# Ruff lint/format cache
+.ruff_cache/
+
 # Local-only roadmap
 TODOS.md
