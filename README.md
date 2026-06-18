@@ -31,6 +31,14 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
     - Bar background follows the active theme via `get_options()`.
     - Fixed-width tabs (`FIXED_TAB_WIDTH = 24` cells); shrinks only when kitty's per-tab budget forces it.
 
+## Installation
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
+```
+
+Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`. Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
+
 ## Configuration
 
 | Setting           | Value                                                        |
@@ -118,14 +126,6 @@ Linux: your desktop's custom-shortcut settings (GNOME/KDE). macOS: run it once, 
 ## Sessions
 
 `startup_session` loads `startup.session`, which opens the first window in the splits layout. Edit that file to predefine panes, tabs, or startup programs — commented examples are included.
-
-## Installation
-
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
-```
-
-Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`. Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
 
 ## Companion repos
 
