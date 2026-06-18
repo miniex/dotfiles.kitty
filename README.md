@@ -13,13 +13,16 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 - **100 k scrollback** + 4096 MB pager cache.
 - **Leader chord** — `Ctrl+Shift+Space` prefix, then an action key.
 - **Splits** — splits is the default layout; leader bindings for hsplit/vsplit, `h/j/k/;` focus, arrow-key resize, zoom, close (`Leader>L` toggles splits ↔ stack).
-- **Full theme palette** — ANSI 16 + cursor/selection/url/marks, gradient-aligned.
+- **Full theme palette** — ANSI 16 + cursor/selection/url/marks/scrollbar handle, gradient-aligned.
 - **Command palette** — `Leader>P` fuzzy-finds every action.
 - **Scrollback nav** — hover scrollbar, `[/]` prompt jumps, `/` search, `g/y` last-cmd output/copy.
 - **Ctrl-L** — clears screen + scrollback in one shot.
 - **Neovim scrollback pager** — `q` to quit, full vim motions.
 - **`kitty @` remote control** — `socket-only`, per-PID socket at `/tmp/kitty-{kitty_pid}`.
 - **`kitten ssh`** — auto-pushes terminfo, recolors per host (`ssh.conf`).
+- **Dropdown terminal** — Quake-style `quick-access-terminal.conf`, toggled by a global shortcut.
+- **File picker** — `Leader>F` fuzzy `choose-files`; inserts the selected path at the prompt.
+- **Startup session** — `startup.session` opens the first window in the splits layout.
 - **Kawaii Tab Bar** (`tab_bar.py`):
     - Cell-level gradient `#98ABCC` → `#E890B0`; tab N owns slice `(N-1)/total → N/total`, continuous at boundaries.
     - Rounded Powerline-Extra caps on the first/last tab; `▌` divider between tabs.
@@ -90,6 +93,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `P`   | Command palette    | `G`   | Git-hash hint     |
 | `←/→` | Resize narrow/wide | `↑/↓` | Resize tall/short |
 | `0`   | Reset split size   | `U`   | Unicode input     |
+| `F`   | File picker        |       |                   |
 
 ## SSH
 
@@ -100,6 +104,20 @@ alias ssh='kitten ssh'
 ```
 
 Default schemes: cherry-blossom (`*`), **Red Sands** (`prod-*`/`*.prod`, safety net), **Solarized Dark** (`staging-*`).
+
+## Dropdown terminal
+
+`quick-access-terminal.conf` defines a Quake-style drop-down terminal that inherits this config. It has no in-kitty binding — bind its toggle command to a global shortcut (run = show, run again = hide):
+
+```sh
+kitten quick-access-terminal
+```
+
+Linux: your desktop's custom-shortcut settings (GNOME/KDE). macOS: run it once, then System Settings → Keyboard → Shortcuts → Services.
+
+## Sessions
+
+`startup_session` loads `startup.session`, which opens the first window in the splits layout. Edit that file to predefine panes, tabs, or startup programs — commented examples are included.
 
 ## Installation
 
