@@ -71,7 +71,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 **Font size** — `Ctrl+Shift+=` / `Ctrl+Shift+-` step ±1.0 · `Ctrl+Shift+Backspace` reset.
 
-**Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+I` IP · `Leader>G` git hash → clipboard. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
+**Hints (custom)** — `Ctrl+Shift+U` URL · `Ctrl+Shift+I` IP · `Leader>G` git hash → clipboard. `Ctrl+Shift+U` shadows kitty's Unicode-input default, so it is rebound to `Leader>U`. Defaults still cover open/insert (`Ctrl+Shift+E` opens URL, etc.).
 
 **Shell-integration** — `Ctrl+Shift+G/Y` last-cmd output/copy · `Ctrl+Shift+/` search scrollback · `Ctrl+Shift+[/]` prev/next prompt · `Ctrl+Shift+L` clear screen + scrollback.
 
@@ -89,7 +89,7 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 | `Z`   | Zoom (stack)       | `Q`   | Close window      |
 | `P`   | Command palette    | `G`   | Git-hash hint     |
 | `←/→` | Resize narrow/wide | `↑/↓` | Resize tall/short |
-| `0`   | Reset split size   |       |                   |
+| `0`   | Reset split size   | `U`   | Unicode input     |
 
 ## SSH
 
