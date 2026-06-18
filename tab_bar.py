@@ -108,6 +108,7 @@ def _tick(timer_id: int) -> None:
         remove_timer(timer_id)
         st.timer_id = None
         st.prev_active_id = None
+        tm.mark_tab_bar_dirty()  # paint the settled frame now that timer state is cleared
         return
     tm.mark_tab_bar_dirty()
 
