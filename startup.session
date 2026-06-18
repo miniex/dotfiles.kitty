@@ -1,0 +1,10 @@
+# Startup session — loaded by `startup_session` in kitty.conf for new OS windows.
+# Paths are relative to the kitty config dir. Edit to define your startup layout.
+
+layout splits
+launch --cwd=current
+
+# Add more panes/tabs by uncommenting (and editing) these:
+# launch --location=vsplit --bias=40 --cwd=current
+# new_tab logs
+# launch --cwd=current
