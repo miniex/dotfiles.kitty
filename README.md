@@ -105,11 +105,21 @@ Re-run `sh install.sh` to switch, or edit `os.conf` directly.
 
 ## SSH
 
-`ssh.conf` is auto-loaded by `kitten ssh`. To use it, alias `ssh` in your shell rc:
+`ssh.conf` is auto-loaded by `kitten ssh`. Alias `ssh` to it **only inside kitty**, so other terminals, TTYs, and remote hosts keep the real `ssh`:
+
+```fish
+# fish — ~/.config/fish/config.fish
+if set -q KITTY_WINDOW_ID
+    alias ssh='kitten ssh'
+end
+```
 
 ```sh
-alias ssh='kitten ssh'
+# bash/zsh — ~/.bashrc or ~/.zshrc
+[ -n "$KITTY_WINDOW_ID" ] && alias ssh='kitten ssh'
 ```
+
+For a host where `kitten ssh` misbehaves (restricted shells, network gear), bypass the alias with `command ssh host` (or `\ssh host`). `git`, `rsync`, and `scp` call the `ssh` binary directly, so they are unaffected.
 
 Default schemes: cherry-blossom (`*`), **Red Sands** (`prod-*`/`*.prod`, safety net), **Solarized Dark** (`staging-*`).
 
