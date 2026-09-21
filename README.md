@@ -37,7 +37,7 @@ Polished Kitty config — Nerd Font integration, custom gradient tab bar, leader
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/miniex/dotfiles.kitty/main/install.sh)"
 ```
 
-Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`. Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
+Clones to `~/.config/kitty`, auto-detects Linux/macOS, writes `os.conf`, copies `xterm-kitty` into `~/.terminfo` (so `sudo vim` finds it). Then install [D2Coding](https://github.com/naver/d2codingfont) and [Symbols Nerd Font Mono](https://www.nerdfonts.com/).
 
 ## Configuration
 

@@ -102,6 +102,26 @@ write_os_conf() {
     ok "os.conf → include os/$2.conf"
 }
 
+# sudo wipes TERMINFO_DIRS and SIP locks /usr/share/terminfo — but sudo keeps HOME.
+install_terminfo() {
+    for d in "${KITTY_INSTALLATION_DIR:-}/terminfo" \
+        /Applications/kitty.app/Contents/Resources/kitty/terminfo \
+        "$HOME/.local/kitty.app/lib/kitty/terminfo" \
+        /usr/lib/kitty/terminfo \
+        /usr/share/kitty/terminfo; do
+        for src in "$d/78/xterm-kitty" "$d/x/xterm-kitty"; do
+            [ -f "$src" ] || continue
+            # 78/ or x/: the leaf dir name is an ncurses build-time choice.
+            mkdir -p "$HOME/.terminfo/78" "$HOME/.terminfo/x"
+            cp "$src" "$HOME/.terminfo/78/xterm-kitty"
+            cp "$src" "$HOME/.terminfo/x/xterm-kitty"
+            ok 'xterm-kitty → ~/.terminfo'
+            return 0
+        done
+    done
+    warn 'kitty terminfo not found — sudo may warn about TERM'
+}
+
 banner
 
 step "Pre-flight checks"
@@ -157,6 +177,9 @@ else
     info "non-interactive — using detected ($choice)"
 fi
 write_os_conf "$KITTY_CONFIG" "$choice"
+
+step "Terminfo"
+install_terminfo
 
 step "Done"
 ok "miniex/dotfiles.kitty installed at $KITTY_CONFIG"
